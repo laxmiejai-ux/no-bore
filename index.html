@@ -1,115 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>12 Games</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:Arial;padding:20px}
-h1{text-align:center;margin-bottom:20px}
-.tabs{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:20px}
-.tab{padding:10px 15px;background:#fff;color:#000;border:none;cursor:pointer;font-weight:bold;border-radius:5px}
-.tab.active{background:#FFD93D}
-.content{display:none;text-align:center;padding:20px;background:#222;border-radius:10px;min-height:300px}
-.content.active{display:block}
-.cell{width:70px;height:70px;background:#333;border:2px solid #fff;color:#FFD93D;font-size:28px;font-weight:bold;cursor:pointer}
-button{padding:10px 20px;background:#fff;color:#000;border:none;cursor:pointer;font-weight:bold;margin:5px;border-radius:5px}
-button:hover{background:#ccc}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12 Games Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; color: #fff; font-family: Arial; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 20px; }
+        .tabs { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 15px; background: #fff; color: #000; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; }
+        .tab-btn.active { background: #FFD93D; }
+        .tab-btn:hover { background: #ccc; }
+        .game-section { display: none; text-align: center; padding: 20px; background: #222; border-radius: 10px; min-height: 300px; }
+        .game-section.active { display: block; }
+        .ttt-grid { display: grid; grid-template-columns: repeat(3, 70px); gap: 10px; margin: 20px auto; }
+        .ttt-cell { width: 70px; height: 70px; background: #333; border: 2px solid #fff; color: #FFD93D; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .ttt-cell:hover { background: #444; }
+        button { padding: 10px 20px; background: #fff; color: #000; border: none; cursor: pointer; font-weight: bold; margin: 5px; border-radius: 5px; }
+        button:hover { background: #ccc; }
+        canvas { border: 2px solid #fff; background: #000; margin: 10px 0; }
+    </style>
 </head>
 <body>
 
-<h1>🎮 12 Games Collection 🎮</h1>
+<h1>🎮 12 Games Hub 🎮</h1>
 
 <div class="tabs">
-<button class="tab active" onclick="show(0)">Tic Tac Toe</button>
-<button class="tab" onclick="show(1)">RPS</button>
-<button class="tab" onclick="show(2)">Connect 4</button>
-<button class="tab" onclick="show(3)">Quiz</button>
-<button class="tab" onclick="show(4)">Hangman</button>
-<button class="tab" onclick="show(5)">Snake</button>
-<button class="tab" onclick="show(6)">Hockey</button>
-<button class="tab" onclick="show(7)">Carrom</button>
-<button class="tab" onclick="show(8)">Ludo</button>
-<button class="tab" onclick="show(9)">Sudoku</button>
-<button class="tab" onclick="show(10)">Chess</button>
-<button class="tab" onclick="show(11)">2048</button>
+    <button class="tab-btn active" onclick="switchTab(0)">⭕ TTT</button>
+    <button class="tab-btn" onclick="switchTab(1)">✂️ RPS</button>
+    <button class="tab-btn" onclick="switchTab(2)">🔴 C4</button>
+    <button class="tab-btn" onclick="switchTab(3)">🧮 Quiz</button>
+    <button class="tab-btn" onclick="switchTab(4)">🎯 Hang</button>
+    <button class="tab-btn" onclick="switchTab(5)">🐍 Snake</button>
+    <button class="tab-btn" onclick="switchTab(6)">🏒 Hockey</button>
+    <button class="tab-btn" onclick="switchTab(7)">🎱 Carrom</button>
+    <button class="tab-btn" onclick="switchTab(8)">🎲 Ludo</button>
+    <button class="tab-btn" onclick="switchTab(9)">🔢 Sudoku</button>
+    <button class="tab-btn" onclick="switchTab(10)">♟️ Chess</button>
+    <button class="tab-btn" onclick="switchTab(11)">2️⃣ 2048</button>
 </div>
 
-<div class="content active">
-<h2>Tic Tac Toe</h2>
-<div style="display:grid;grid-template-columns:repeat(3,70px);gap:10px;margin:20px auto;width:fit-content">
-<button class="cell" onclick="tttPlay(0)" id="t0"></button>
-<button class="cell" onclick="tttPlay(1)" id="t1"></button>
-<button class="cell" onclick="tttPlay(2)" id="t2"></button>
-<button class="cell" onclick="tttPlay(3)" id="t3"></button>
-<button class="cell" onclick="tttPlay(4)" id="t4"></button>
-<button class="cell" onclick="tttPlay(5)" id="t5"></button>
-<button class="cell" onclick="tttPlay(6)" id="t6"></button>
-<button class="cell" onclick="tttPlay(7)" id="t7"></button>
-<button class="cell" onclick="tttPlay(8)" id="t8"></button>
-</div>
-<p id="ttt-status">Your Turn</p>
-<button onclick="tttReset()">New Game</button>
-</div>
-
-<div class="content">
-<h2>Rock Paper Scissors</h2>
-<button onclick="rpsPlay('rock')">🪨 Rock</button>
-<button onclick="rpsPlay('paper')">📄 Paper</button>
-<button onclick="rpsPlay('scissors')">✂️ Scissors</button>
-<p>You: <span id="rps-you">-</span> | AI: <span id="rps-ai">-</span></p>
-<p>Wins - You: <span id="rps-wins">0</span> | AI: <span id="rps-ai-wins">0</span></p>
+<!-- TIC TAC TOE -->
+<div class="game-section active">
+    <h2>⭕ Tic Tac Toe</h2>
+    <p id="ttt-status">Your Turn (X)</p>
+    <div class="ttt-grid">
+        <button class="ttt-cell" onclick="tttPlay(0)"></button>
+        <button class="ttt-cell" onclick="tttPlay(1)"></button>
+        <button class="ttt-cell" onclick="tttPlay(2)"></button>
+        <button class="ttt-cell" onclick="tttPlay(3)"></button>
+        <button class="ttt-cell" onclick="tttPlay(4)"></button>
+        <button class="ttt-cell" onclick="tttPlay(5)"></button>
+        <button class="ttt-cell" onclick="tttPlay(6)"></button>
+        <button class="ttt-cell" onclick="tttPlay(7)"></button>
+        <button class="ttt-cell" onclick="tttPlay(8)"></button>
+    </div>
+    <button onclick="tttReset()">New Game</button>
 </div>
 
-<div class="content"><h2>Connect 4</h2><p>Coming Soon!</p></div>
-<div class="content"><h2>Quiz</h2><button onclick="startQuiz()">Start Quiz</button><p id="quiz-text"></p></div>
-<div class="content"><h2>Hangman</h2><p id="hangman-word" style="font-size:32px"></p><p>Left: <span id="hangman-left">6</span></p><div id="hangman-btns"></div><button onclick="hangStart()">New Game</button></div>
-<div class="content"><h2>Snake</h2><canvas id="snake" width="300" height="300" style="border:2px solid #fff"></canvas><p>Score: <span id="snake-score">0</span></p><button onclick="snakeStart()">Start</button></div>
-<div class="content"><h2>Air Hockey</h2><canvas id="hockey" width="400" height="200" style="border:2px solid #fff;background:#006b3f"></canvas><p>You: <span id="h-you">0</span> AI: <span id="h-ai">0</span></p></div>
-<div class="content"><h2>Carrom</h2><button onclick="carromAdd()">+10 Pts</button><p>You: <span id="carrom">0</span></p></div>
-<div class="content"><h2>Ludo</h2><button onclick="ludoRoll()">Roll</button><p id="ludo-text">Click Roll</p><p>P1: <span id="ludo-p1">0</span> P2: <span id="ludo-p2">0</span></p></div>
-<div class="content"><h2>Sudoku</h2><div id="sudoku"></div></div>
-<div class="content"><h2>Chess</h2><div id="chess"></div></div>
-<div class="content"><h2>2048</h2><div id="game2048"></div><p>Score: <span id="2048-score">0</span></p></div>
+<!-- ROCK PAPER SCISSORS -->
+<div class="game-section">
+    <h2>✂️ Rock Paper Scissors</h2>
+    <button onclick="rpsPlay('rock')">🪨 Rock</button>
+    <button onclick="rpsPlay('paper')">📄 Paper</button>
+    <button onclick="rpsPlay('scissors')">✂️ Scissors</button>
+    <p>You: <span id="rps-you">-</span> | AI: <span id="rps-ai">-</span></p>
+    <p>Wins - You: <span id="rps-wins">0</span> | AI: <span id="rps-ai-wins">0</span></p>
+</div>
+
+<!-- CONNECT 4 -->
+<div class="game-section"><h2>🔴 Connect 4</h2><p>Coming Soon!</p></div>
+
+<!-- QUIZ -->
+<div class="game-section">
+    <h2>🧮 Maths Quiz</h2>
+    <div id="quiz-display"></div>
+    <p>Score: <span id="quiz-score">0</span>/5</p>
+</div>
+
+<!-- HANGMAN -->
+<div class="game-section">
+    <h2>🎯 Hangman</h2>
+    <p id="hangman-word" style="font-size: 32px; font-family: monospace;"></p>
+    <p>Remaining: <span id="hangman-left">6</span></p>
+    <div id="hangman-buttons"></div>
+    <button onclick="hangStart()">New Game</button>
+</div>
+
+<!-- SNAKE -->
+<div class="game-section">
+    <h2>🐍 Snake</h2>
+    <p>Use Arrow Keys</p>
+    <canvas id="snake-canvas" width="300" height="300"></canvas>
+    <p>Score: <span id="snake-score">0</span></p>
+</div>
+
+<!-- HOCKEY -->
+<div class="game-section">
+    <h2>🏒 Air Hockey</h2>
+    <canvas id="hockey-canvas" width="400" height="200"></canvas>
+    <p>You: <span id="hockey-you">0</span> | AI: <span id="hockey-ai">0</span></p>
+</div>
+
+<!-- CARROM -->
+<div class="game-section">
+    <h2>🎱 Carrom</h2>
+    <button onclick="carromAdd()">+10 Points</button>
+    <p>Score: <span id="carrom-score">0</span></p>
+</div>
+
+<!-- LUDO -->
+<div class="game-section">
+    <h2>🎲 Ludo</h2>
+    <button onclick="ludoRoll()">🎲 Roll Dice</button>
+    <p id="ludo-roll">Click to roll</p>
+    <p>P1: <span id="ludo-p1">0</span> | P2: <span id="ludo-p2">0</span></p>
+</div>
+
+<!-- SUDOKU -->
+<div class="game-section"><h2>🔢 Sudoku</h2><div id="sudoku-grid"></div></div>
+
+<!-- CHESS -->
+<div class="game-section"><h2>♟️ Chess</h2><div id="chess-board"></div></div>
+
+<!-- 2048 -->
+<div class="game-section"><h2>2048</h2><div id="game2048"></div><p>Score: <span id="2048-score">0</span></p></div>
 
 <script>
-function show(i){document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.content')[i].classList.add('active');document.querySelectorAll('.tab')[i].classList.add('active')}
-let tttB=['','','','','','','','',''],tttO=false;
-function tttPlay(i){if(tttB[i]===''){tttB[i]='X';tttShow();if(tttWin('X')){document.getElementById('ttt-status').innerText='YOU WIN!';tttO=true}else setTimeout(tttAI,500)}}
-function tttAI(){let e=[];for(let i=0;i<9;i++)if(tttB[i]==='')e.push(i);if(e.length>0){tttB[e[Math.floor(Math.random()*e.length)]]='O';tttShow();if(tttWin('O')){document.getElementById('ttt-status').innerText='AI WINS!';tttO=true}}}
-function tttWin(p){let w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return w.some(x=>x.every(i=>tttB[i]===p))}
-function tttShow(){for(let i=0;i<9;i++)document.getElementById('t'+i).innerText=tttB[i]}
-function tttReset(){tttB=['','','','','','','','',''];tttO=false;document.getElementById('ttt-status').innerText='Your Turn';tttShow()}
-let rpsY=0,rpsA=0;
-function rpsPlay(c){let o=['rock','paper','scissors'];let a=o[Math.floor(Math.random()*3)];document.getElementById('rps-you').innerText=c;document.getElementById('rps-ai').innerText=a;if(c!==a){if((c==='rock'&&a==='scissors')||(c==='paper'&&a==='rock')||(c==='scissors'&&a==='paper')){rpsY++;document.getElementById('rps-wins').innerText=rpsY}else{rpsA++;document.getElementById('rps-ai-wins').innerText=rpsA}}}
-let quizQs=[{q:'5+3?',a:8},{q:'12-7?',a:5},{q:'6x7?',a:42},{q:'36/6?',a:6},{q:'15+25?',a:40}];let quizI=0,quizS=0;
-function startQuiz(){if(quizI<quizQs.length){let q=quizQs[quizI];document.getElementById('quiz-text').innerHTML=`<p>${q.q}</p><button onclick="quizAns(${q.a-1},${q.a})">${q.a-1}</button><button onclick="quizAns(${q.a},${q.a})">${q.a}</button><button onclick="quizAns(${q.a+1},${q.a})">${q.a+1}</button>`}else{document.getElementById('quiz-text').innerText=`Done! ${quizS}/5`;quizI=0;quizS=0}}
-function quizAns(sel,cor){if(sel===cor)quizS++;quizI++;startQuiz()}
-let hangW='JAVASCRIPT',hangG=[],hangL=6;
-function hangStart(){hangW=['JAVASCRIPT','PROGRAMMING','DEVELOPER'][Math.floor(Math.random()*3)];hangG=[];hangL=6;hangShow();let h='';for(let i=65;i<=90;i++){let l=String.fromCharCode(i);h+=`<button onclick="hangGuess('${l}')" id="h${l}" style="width:25px;height:25px;padding:0;margin:2px">${l}</button>`}document.getElementById('hangman-btns').innerHTML=h}
-function hangGuess(l){if(!hangG.includes(l)){hangG.push(l);document.getElementById('h'+l).disabled=true;if(!hangW.includes(l))hangL--;hangShow()}}
-function hangShow(){let d=hangW.split('').map(l=>hangG.includes(l)?l:'_').join(' ');document.getElementById('hangman-word').innerText=d;document.getElementById('hangman-left').innerText=hangL}
-hangStart();
-let snakeB=[{x:10,y:10}],snakeF={x:15,y:15},snakeD={x:1,y:0},snakeS=0;
-function snakeDraw(){let c=document.getElementById('snake');let ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,300,300);ctx.fillStyle='#0f0';snakeB.forEach(s=>ctx.fillRect(s.x*10,s.y*10,8,8));ctx.fillStyle='#f00';ctx.fillRect(snakeF.x*10,snakeF.y*10,8,8)}
-function snakeUp(){let h={x:snakeB[0].x+snakeD.x,y:snakeB[0].y+snakeD.y};if(h.x===snakeF.x&&h.y===snakeF.y){snakeS+=10;document.getElementById('snake-score').innerText=snakeS;snakeF={x:Math.floor(Math.random()*30),y:Math.floor(Math.random()*30)}}else snakeB.pop();snakeB.unshift(h);snakeDraw()}
-function snakeStart(){setInterval(snakeUp,100);snakeDraw();document.addEventListener('keydown',e=>{if(e.key==='ArrowUp'&&snakeD.y===0)snakeD={x:0,y:-1};if(e.key==='ArrowDown'&&snakeD.y===0)snakeD={x:0,y:1};if(e.key==='ArrowLeft'&&snakeD.x===0)snakeD={x:-1,y:0};if(e.key==='ArrowRight'&&snakeD.x===0)snakeD={x:1,y:0}})}
-let hP1={x:20,y:75,h:40},hP2={x:360,y:75,h:40},hB={x:200,y:100,vx:2,vy:2},hS1=0,hS2=0;
-function hockeyUp(){let c=document.getElementById('hockey');let ctx=c.getContext('2d');ctx.fillStyle='#006b3f';ctx.fillRect(0,0,400,200);hB.x+=hB.vx;hB.y+=hB.vy;if(hB.y<0||hB.y>200)hB.vy*=-1;if(hB.x<hP1.x+10&&hB.y>hP1.y&&hB.y<hP1.y+hP1.h)hB.vx*=-1;if(hB.x>hP2.x&&hB.y>hP2.y&&hB.y<hP2.y+hP2.h)hB.vx*=-1;if(hB.x<0){hS2++;hB={x:200,y:100,vx:2,vy:2}}if(hB.x>400){hS1++;hB={x:200,y:100,vx:-2,vy:2}}document.getElementById('h-you').innerText=hS1;document.getElementById('h-ai').innerText=hS2;ctx.fillStyle='#fff';ctx.fillRect(hP1.x,hP1.y,10,hP1.h);ctx.fillRect(hP2.x,hP2.y,10,hP2.h);ctx.fillStyle='#ffff00';ctx.beginPath();ctx.arc(hB.x,hB.y,5,0,Math.PI*2);ctx.fill()}
-setInterval(hockeyUp,30);
-let carromS=0;
-function carromAdd(){carromS+=10;document.getElementById('carrom').innerText=carromS}
-let ludoP1=0,ludoP2=0,ludoT=1;
-function ludoRoll(){let r=Math.floor(Math.random()*6)+1;if(ludoT===1){ludoP1=Math.min(ludoP1+r,100);ludoT=2}else{ludoP2=Math.min(ludoP2+r,100);ludoT=1}document.getElementById('ludo-text').innerText='Rolled: '+r;document.getElementById('ludo-p1').innerText=ludoP1;document.getElementById('ludo-p2').innerText=ludoP2;if(ludoP1===100)alert('P1 Wins!');if(ludoP2===100)alert('P2 Wins!')}
-document.getElementById('sudoku').innerHTML='<div style="display:inline-grid;grid-template-columns:repeat(9,30px);gap:2px">'+Array(81).fill(0).map(()=>'<input type="number" min="1" max="9" style="width:30px;height:30px;background:#222;color:#fff;border:1px solid #555;text-align:center">').join('')+'</div>';
-document.getElementById('chess').innerHTML=Array(8).fill(0).map((,i)=>Array(8).fill(0).map((,j)=>`<div style="width:40px;height:40px;background:${(i+j)%2===0?'#deb887':'#8b4513'};display:inline-block;border:1px solid #999"></div>`).join('')).join('<br>');
-let g2048=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],s2048=0;
-function add2048(){let e=[];for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(g2048[i][j]===0)e.push([i,j]);if(e.length){let[i,j]=e[Math.floor(Math.random()*e.length)];g2048[i][j]=Math.random()<0.9?2:4}}
-function draw2048(){let h='';for(let i=0;i<4;i++)for(let j=0;j<4;j++){let v=g2048[i][j];h+=`<div style="width:60px;height:60px;background:${v===0?'#222':v===2?'#eee4da':'#ede0c8'};display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;margin:3px;border-radius:3px">${v||''}</div>`}document.getElementById('game2048').innerHTML=h;document.getElementById('2048-score').innerText=s2048}
-add2048();add2048();draw2048();
-document.addEventListener('keydown',e=>{if(e.key.includes('Arrow')){s2048+=2;draw2048()}});
+function switchTab(i){let s=document.querySelectorAll('.game-section');let b=document.querySelectorAll('.tab-btn');s.forEach(x=>x.classList.remove('active'));b.forEach(x=>x.classList.remove('active'));s[i].classList.add('active');b[i].classList.add('active')}
+let tttB=['','','','','','','','',''],tttOv=false;function tttPlay(i){if(tttB[i]===''){tttB[i]='X';updateTTT();if(checkWinTTT('X')){document.getElementById('ttt-status').innerText='YOU WIN!';tttOv=true}else setTimeout(tttAI,500)}}function tttAI(){let e=[];for(let i=0;i<9;i++)if(tttB[i]==='')e.push(i);if(e.length>0){tttB[e[Math.floor(Math.random()*e.length)]]='O';updateTTT();if(checkWinTTT('O')){document.getElementById('ttt-status').innerText='AI WINS!';tttOv=true}}}function checkWinTTT(p){let w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return w.some(x=>x.every(i=>tttB[i]===p))}function updateTTT(){document.querySelectorAll('.ttt-cell').forEach((c,i)=>c.innerText=tttB[i])}function tttReset(){tttB=['','','','','','','','',''];tttOv=false;document.getElementById('ttt-status').innerText='Your Turn (X)';updateTTT()}
+let rpsYW=0,rpsAW=0;function rpsPlay(c){let o=['rock','paper','scissors'];let a=o[Math.floor(Math.random()*3)];document.getElementById('rps-you').innerText=c.toUpperCase();document.getElementById('rps-ai').innerText=a.toUpperCase();if(c!==a){if((c==='rock'&&a==='scissors')||(c==='paper'&&a==='rock')||(c==='scissors'&&a==='paper')){rpsYW++;document.getElementById('rps-wins').innerText=rpsYW}else{rpsAW++;document.getElementById('rps-ai-wins').innerText=rpsAW}}}
+let quizQs=[{q:'5+3?',a:8},{q:'12-7?',a:5},{q:'6x7?',a:42},{q:'36/6?',a:6},{q:'15+25?',a:40}];let quizI=0,quizS=0;function showQuiz(){if(quizI<quizQs.length){let q=quizQs[quizI];let o=[q.a-2,q.a,q.a+2].sort(()=>Math.random()-0.5);let h=`<p>${q.q}</p>`;o.forEach(opt=>h+=`<button onclick="answerQuiz(${opt},${q.a})">${opt}</button>`);document.getElementById('quiz-display').innerHTML=h}else{document.getElementById('quiz-display').innerHTML=`Done! ${quizS}/5 <button onclick="resetQuiz()">Retry</button>`}}function answerQuiz(s,c){if(s===c)quizS++;document.getElementById('quiz-score').innerText=quizS;quizI++;setTimeout(showQuiz,500)}function resetQuiz(){quizI=0;quizS=0;showQuiz()}showQuiz();
+let hangWs=['JAVASCRIPT','PROGRAMMING','DEVELOPER','COMPUTER','HANGMAN'];let hangW='',hangG=[],hangL=6;function hangStart(){hangW=hangWs[Math.floor(Math.random()*hangWs.length)];hangG=[];hangL=6;displayHang();let h='';for(let i=65;i<=90;i++){let l=String.fromCharCode(i);h+=`<button onclick="guessLetter('${l}')" id="btn${l}" style="width:25px;height:25px;padding:0;margin:2px">${l}</button>`}document.getElementById('hangman-buttons').innerHTML=h}function guessLetter(l){if(!hangG.includes(l)){hangG.push(l);document.getElementById('btn'+l).disabled=true;if(!hangW.includes(l))hangL--;displayHang()}}function displayHang(){let d=hangW.split('').map(l=>hangG.includes(l)?l:'_').join(' ');document.getElementById('hangman-word').innerText=d;document.getElementById('hangman-left').innerText=hangL}hangStart();
+let snakeB=[{x:10,y:10}],snakeF={x:15,y:15},snakeD={x:1,y:0},snakeS=0;function snakeDraw(){let c=document.getElementById('snake-canvas');let ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,300,300);ctx.fillStyle='#0f0';snakeB.forEach(s=>ctx.fillRect(s.x*10,s.y*10,8,8));ctx.fillStyle='#f00';ctx.fillRect(snakeF.x*10,snakeF.y*10,8,8)}function snakeUpdate(){let h={x:snakeB[0].x+snakeD.x,y:snakeB[0].y+snakeD.y};if(h.x===snakeF.x&&h.y===snakeF.y){snakeS+=10;document.getElementById('snake-score').innerText=snakeS;snakeF={x:Math.floor(Math.random()*30),y:Math.floor(Math.random()*30)}}else snakeB.pop();snakeB.unshift(h);snakeDraw()}setInterval(snakeUpdate,100);snakeDraw();document.addEventListener('keydown',e=>{if(e.key==='ArrowUp'&&snakeD.y===0)snakeD={x:0,y:-1};if(e.key==='ArrowDown'&&snakeD.y===0)snakeD={x:0,y:1};if(e.key==='ArrowLeft'&&snakeD.x===0)snakeD={x:-1,y:0};if(e.key==='ArrowRight'&&snakeD.x===0)snakeD={x:1,y:0}});
+let p1={x:20,y:75,h:40},p2={x:360,y:75,h:40},ball={x:200,y:100,vx:2,vy:2},hS1=0,hS2=0;function hUp(){let c=document.getElementById('hockey-canvas');let ctx=c.getContext('2d');ctx.fillStyle='#006b3f';ctx.fillRect(0,0,400,200);ball.x+=ball.vx;ball.y+=ball.vy;if(ball.y<0||ball.y>200)ball.vy*=-1;if(ball.x<p1.x+10&&ball.y>p1.y&&ball.y<p1.y+p1.h)ball.vx*=-1;if(ball.x>p2.x&&ball.y>p2.y&&ball.y<p2.y+p2.h)ball.vx*=-1;if(ball.x<0){hS2++;ball={x:200,y:100,vx:2,vy:2}}if(ball.x>400){hS1++;ball={x:200,y:100,vx:-2,vy:2}}document.getElementById('hockey-you').innerText=hS1;document.getElementById('hockey-ai').innerText=hS2;ctx.fillStyle='#fff';ctx.fillRect(p1.x,p1.y,10,p1.h);ctx.fillRect(p2.x,p2.y,10,p2.h);ctx.fillStyle='#ffff00';ctx.beginPath();ctx.arc(ball.x,ball.y,5,0,Math.PI*2);ctx.fill()}setInterval(hUp,30);document.addEventListener('mousemove',e=>{let r=document.getElementById('hockey-canvas').getBoundingClientRect();p1.y=e.clientY-r.top-p1.h/2;p2.y+=(ball.y-p2.y-p2.h/2)*0.05});hUp();
+let carS=0;function carromAdd(){carS+=10;document.getElementById('carrom-score').innerText=carS}
+let ludoP1=0,ludoP2=0,ludoT=1;function ludoRoll(){let r=Math.floor(Math.random()*6)+1;if(ludoT===1){ludoP1=Math.min(ludoP1+r,100);ludoT=2}else{ludoP2=Math.min(ludoP2+r,100);ludoT=1}document.getElementById('ludo-roll').innerText='Rolled: '+r;document.getElementById('ludo-p1').innerText=ludoP1;document.getElementById('ludo-p2').innerText=ludoP2;if(ludoP1===100)alert('P1 Wins!');if(ludoP2===100)alert('P2 Wins!')}
+document.getElementById('sudoku-grid').innerHTML='<div style="display:inline-grid;grid-template-columns:repeat(9,35px);gap:2px">'+Array(81).fill(0).map(()=>'<input type="number" min="1" max="9" style="width:35px;height:35px;background:#222;color:#fff;border:1px solid #555">').join('')+'</div>';
+let ch='';for(let i=0;i<8;i++){for(let j=0;j<8;j++){let bg=(i+j)%2===0?'#deb887':'#8b4513';ch+=`<div style="width:40px;height:40px;background:${bg};display:inline-block;border:1px solid #999"></div>`}}document.getElementById('chess-board').innerHTML=ch;
+let g2048=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],s2048=0;function add2048(){let e=[];for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(g2048[i][j]===0)e.push([i,j]);if(e.length){let[i,j]=e[Math.floor(Math.random()*e.length)];g2048[i][j]=Math.random()<0.9?2:4}}function draw2048(){let h='';for(let i=0;i<4;i++)for(let j=0;j<4;j++){let v=g2048[i][j];h+=`<div style="width:60px;height:60px;background:${v===0?'#333':v===2?'#eee4da':'#ede0c8'};display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;margin:3px;border-radius:3px">${v||''}</div>`}document.getElementById('game2048').innerHTML=h;document.getElementById('2048-score').innerText=s2048}add2048();add2048();draw2048();document.addEventListener('keydown',e=>{if(e.key.includes('Arrow')){s2048+=2;draw2048()}});
 </script>
 </body>
 </html>
