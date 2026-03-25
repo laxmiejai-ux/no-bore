@@ -1,149 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12 Games in One</title>
-    <style>
-        body {
-            background-color: black;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid white;
-        }
-        .tab {
-            padding: 10px;
-            cursor: pointer;
-            border: 1px solid white;
-            margin-right: 5px;
-            background-color: black;
-        }
-        .tab:hover {
-            background-color: white;
-            color: black;
-        }
-        .game {
-            display: none;
-        }
-        .active {
-            display: block;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 Games</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Arial;padding:20px}
+h1{text-align:center;margin-bottom:20px}
+.tabs{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:20px}
+.tab{padding:10px 15px;background:#fff;color:#000;border:none;cursor:pointer;font-weight:bold;border-radius:5px}
+.tab.active{background:#FFD93D}
+.content{display:none;text-align:center;padding:20px;background:#222;border-radius:10px;min-height:300px}
+.content.active{display:block}
+.cell{width:70px;height:70px;background:#333;border:2px solid #fff;color:#FFD93D;font-size:28px;font-weight:bold;cursor:pointer}
+button{padding:10px 20px;background:#fff;color:#000;border:none;cursor:pointer;font-weight:bold;margin:5px;border-radius:5px}
+button:hover{background:#ccc}
+</style>
 </head>
 <body>
-    <h1>Welcome to 12 Games</h1>
-    <div class="tabs">
-        <div class="tab" onclick="showGame('ticTacToe')">Tic Tac Toe</div>
-        <div class="tab" onclick="showGame('rockPaperScissors')">Rock Paper Scissors</div>
-        <div class="tab" onclick="showGame('connect4')">Connect 4</div>
-        <div class="tab" onclick="showGame('mathsQuiz')">Maths Quiz</div>
-        <div class="tab" onclick="showGame('hangman')">Hangman</div>
-        <div class="tab" onclick="showGame('snake')">Snake</div>
-        <div class="tab" onclick="showGame('airHockey')">Air Hockey</div>
-        <div class="tab" onclick="showGame('carrom')">Carrom</div>
-        <div class="tab" onclick="showGame('ludo')">Ludo</div>
-        <div class="tab" onclick="showGame('sudoku')">Sudoku</div>
-        <div class="tab" onclick="showGame('chess')">Chess</div>
-        <div class="tab" onclick="showGame('2048')">2048</div>
-    </div>
-    <div id="games">
-        <div id="ticTacToe" class="game active">
-            <h2>Tic Tac Toe</h2>
-            <script>
-            // Tic Tac Toe Game Code
-            </script>
-            <p><!-- Tic Tac Toe game implementation here --></p>
-        </div>
-        <div id="rockPaperScissors" class="game">
-            <h2>Rock Paper Scissors</h2>
-            <script>
-            // Rock Paper Scissors Game Code
-            </script>
-            <p><!-- Rock Paper Scissors game implementation here --></p>
-        </div>
-        <div id="connect4" class="game">
-            <h2>Connect 4</h2>
-            <script>
-            // Connect 4 Game Code
-            </script>
-            <p><!-- Connect 4 game implementation here --></p>
-        </div>
-        <div id="mathsQuiz" class="game">
-            <h2>Maths Quiz</h2>
-            <script>
-            // Maths Quiz Game Code
-            </script>
-            <p><!-- Maths Quiz implementation here --></p>
-        </div>
-        <div id="hangman" class="game">
-            <h2>Hangman</h2>
-            <script>
-            // Hangman Game Code
-            </script>
-            <p><!-- Hangman game implementation here --></p>
-        </div>
-        <div id="snake" class="game">
-            <h2>Snake</h2>
-            <script>
-            // Snake Game Code
-            </script>
-            <p><!-- Snake game implementation here --></p>
-        </div>
-        <div id="airHockey" class="game">
-            <h2>Air Hockey</h2>
-            <script>
-            // Air Hockey Game Code
-            </script>
-            <p><!-- Air Hockey implementation here --></p>
-        </div>
-        <div id="carrom" class="game">
-            <h2>Carrom</h2>
-            <script>
-            // Carrom Game Code
-            </script>
-            <p><!-- Carrom game implementation here --></p>
-        </div>
-        <div id="ludo" class="game">
-            <h2>Ludo</h2>
-            <script>
-            // Ludo Game Code
-            </script>
-            <p><!-- Ludo game implementation here --></p>
-        </div>
-        <div id="sudoku" class="game">
-            <h2>Sudoku</h2>
-            <script>
-            // Sudoku Game Code
-            </script>
-            <p><!-- Sudoku game implementation here --></p>
-        </div>
-        <div id="chess" class="game">
-            <h2>Chess</h2>
-            <script>
-            // Chess Game Code
-            </script>
-            <p><!-- Chess game implementation here --></p>
-        </div>
-        <div id="2048" class="game">
-            <h2>2048</h2>
-            <script>
-            // 2048 Game Code
-            </script>
-            <p><!-- 2048 game implementation here --></p>
-        </div>
-    </div>
 
-    <script>
-        function showGame(gameId) {
-            const games = document.querySelectorAll('.game');
-            games.forEach((game) => {
-                game.classList.remove('active');
-            });
-            document.getElementById(gameId).classList.add('active');
-        }
-    </script>
+<h1>🎮 12 Games Collection 🎮</h1>
+
+<div class="tabs">
+<button class="tab active" onclick="show(0)">Tic Tac Toe</button>
+<button class="tab" onclick="show(1)">RPS</button>
+<button class="tab" onclick="show(2)">Connect 4</button>
+<button class="tab" onclick="show(3)">Quiz</button>
+<button class="tab" onclick="show(4)">Hangman</button>
+<button class="tab" onclick="show(5)">Snake</button>
+<button class="tab" onclick="show(6)">Hockey</button>
+<button class="tab" onclick="show(7)">Carrom</button>
+<button class="tab" onclick="show(8)">Ludo</button>
+<button class="tab" onclick="show(9)">Sudoku</button>
+<button class="tab" onclick="show(10)">Chess</button>
+<button class="tab" onclick="show(11)">2048</button>
+</div>
+
+<div class="content active">
+<h2>Tic Tac Toe</h2>
+<div style="display:grid;grid-template-columns:repeat(3,70px);gap:10px;margin:20px auto;width:fit-content">
+<button class="cell" onclick="tttPlay(0)" id="t0"></button>
+<button class="cell" onclick="tttPlay(1)" id="t1"></button>
+<button class="cell" onclick="tttPlay(2)" id="t2"></button>
+<button class="cell" onclick="tttPlay(3)" id="t3"></button>
+<button class="cell" onclick="tttPlay(4)" id="t4"></button>
+<button class="cell" onclick="tttPlay(5)" id="t5"></button>
+<button class="cell" onclick="tttPlay(6)" id="t6"></button>
+<button class="cell" onclick="tttPlay(7)" id="t7"></button>
+<button class="cell" onclick="tttPlay(8)" id="t8"></button>
+</div>
+<p id="ttt-status">Your Turn</p>
+<button onclick="tttReset()">New Game</button>
+</div>
+
+<div class="content">
+<h2>Rock Paper Scissors</h2>
+<button onclick="rpsPlay('rock')">🪨 Rock</button>
+<button onclick="rpsPlay('paper')">📄 Paper</button>
+<button onclick="rpsPlay('scissors')">✂️ Scissors</button>
+<p>You: <span id="rps-you">-</span> | AI: <span id="rps-ai">-</span></p>
+<p>Wins - You: <span id="rps-wins">0</span> | AI: <span id="rps-ai-wins">0</span></p>
+</div>
+
+<div class="content"><h2>Connect 4</h2><p>Coming Soon!</p></div>
+<div class="content"><h2>Quiz</h2><button onclick="startQuiz()">Start Quiz</button><p id="quiz-text"></p></div>
+<div class="content"><h2>Hangman</h2><p id="hangman-word" style="font-size:32px"></p><p>Left: <span id="hangman-left">6</span></p><div id="hangman-btns"></div><button onclick="hangStart()">New Game</button></div>
+<div class="content"><h2>Snake</h2><canvas id="snake" width="300" height="300" style="border:2px solid #fff"></canvas><p>Score: <span id="snake-score">0</span></p><button onclick="snakeStart()">Start</button></div>
+<div class="content"><h2>Air Hockey</h2><canvas id="hockey" width="400" height="200" style="border:2px solid #fff;background:#006b3f"></canvas><p>You: <span id="h-you">0</span> AI: <span id="h-ai">0</span></p></div>
+<div class="content"><h2>Carrom</h2><button onclick="carromAdd()">+10 Pts</button><p>You: <span id="carrom">0</span></p></div>
+<div class="content"><h2>Ludo</h2><button onclick="ludoRoll()">Roll</button><p id="ludo-text">Click Roll</p><p>P1: <span id="ludo-p1">0</span> P2: <span id="ludo-p2">0</span></p></div>
+<div class="content"><h2>Sudoku</h2><div id="sudoku"></div></div>
+<div class="content"><h2>Chess</h2><div id="chess"></div></div>
+<div class="content"><h2>2048</h2><div id="game2048"></div><p>Score: <span id="2048-score">0</span></p></div>
+
+<script>
+function show(i){document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.content')[i].classList.add('active');document.querySelectorAll('.tab')[i].classList.add('active')}
+let tttB=['','','','','','','','',''],tttO=false;
+function tttPlay(i){if(tttB[i]===''){tttB[i]='X';tttShow();if(tttWin('X')){document.getElementById('ttt-status').innerText='YOU WIN!';tttO=true}else setTimeout(tttAI,500)}}
+function tttAI(){let e=[];for(let i=0;i<9;i++)if(tttB[i]==='')e.push(i);if(e.length>0){tttB[e[Math.floor(Math.random()*e.length)]]='O';tttShow();if(tttWin('O')){document.getElementById('ttt-status').innerText='AI WINS!';tttO=true}}}
+function tttWin(p){let w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return w.some(x=>x.every(i=>tttB[i]===p))}
+function tttShow(){for(let i=0;i<9;i++)document.getElementById('t'+i).innerText=tttB[i]}
+function tttReset(){tttB=['','','','','','','','',''];tttO=false;document.getElementById('ttt-status').innerText='Your Turn';tttShow()}
+let rpsY=0,rpsA=0;
+function rpsPlay(c){let o=['rock','paper','scissors'];let a=o[Math.floor(Math.random()*3)];document.getElementById('rps-you').innerText=c;document.getElementById('rps-ai').innerText=a;if(c!==a){if((c==='rock'&&a==='scissors')||(c==='paper'&&a==='rock')||(c==='scissors'&&a==='paper')){rpsY++;document.getElementById('rps-wins').innerText=rpsY}else{rpsA++;document.getElementById('rps-ai-wins').innerText=rpsA}}}
+let quizQs=[{q:'5+3?',a:8},{q:'12-7?',a:5},{q:'6x7?',a:42},{q:'36/6?',a:6},{q:'15+25?',a:40}];let quizI=0,quizS=0;
+function startQuiz(){if(quizI<quizQs.length){let q=quizQs[quizI];document.getElementById('quiz-text').innerHTML=`<p>${q.q}</p><button onclick="quizAns(${q.a-1},${q.a})">${q.a-1}</button><button onclick="quizAns(${q.a},${q.a})">${q.a}</button><button onclick="quizAns(${q.a+1},${q.a})">${q.a+1}</button>`}else{document.getElementById('quiz-text').innerText=`Done! ${quizS}/5`;quizI=0;quizS=0}}
+function quizAns(sel,cor){if(sel===cor)quizS++;quizI++;startQuiz()}
+let hangW='JAVASCRIPT',hangG=[],hangL=6;
+function hangStart(){hangW=['JAVASCRIPT','PROGRAMMING','DEVELOPER'][Math.floor(Math.random()*3)];hangG=[];hangL=6;hangShow();let h='';for(let i=65;i<=90;i++){let l=String.fromCharCode(i);h+=`<button onclick="hangGuess('${l}')" id="h${l}" style="width:25px;height:25px;padding:0;margin:2px">${l}</button>`}document.getElementById('hangman-btns').innerHTML=h}
+function hangGuess(l){if(!hangG.includes(l)){hangG.push(l);document.getElementById('h'+l).disabled=true;if(!hangW.includes(l))hangL--;hangShow()}}
+function hangShow(){let d=hangW.split('').map(l=>hangG.includes(l)?l:'_').join(' ');document.getElementById('hangman-word').innerText=d;document.getElementById('hangman-left').innerText=hangL}
+hangStart();
+let snakeB=[{x:10,y:10}],snakeF={x:15,y:15},snakeD={x:1,y:0},snakeS=0;
+function snakeDraw(){let c=document.getElementById('snake');let ctx=c.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,300,300);ctx.fillStyle='#0f0';snakeB.forEach(s=>ctx.fillRect(s.x*10,s.y*10,8,8));ctx.fillStyle='#f00';ctx.fillRect(snakeF.x*10,snakeF.y*10,8,8)}
+function snakeUp(){let h={x:snakeB[0].x+snakeD.x,y:snakeB[0].y+snakeD.y};if(h.x===snakeF.x&&h.y===snakeF.y){snakeS+=10;document.getElementById('snake-score').innerText=snakeS;snakeF={x:Math.floor(Math.random()*30),y:Math.floor(Math.random()*30)}}else snakeB.pop();snakeB.unshift(h);snakeDraw()}
+function snakeStart(){setInterval(snakeUp,100);snakeDraw();document.addEventListener('keydown',e=>{if(e.key==='ArrowUp'&&snakeD.y===0)snakeD={x:0,y:-1};if(e.key==='ArrowDown'&&snakeD.y===0)snakeD={x:0,y:1};if(e.key==='ArrowLeft'&&snakeD.x===0)snakeD={x:-1,y:0};if(e.key==='ArrowRight'&&snakeD.x===0)snakeD={x:1,y:0}})}
+let hP1={x:20,y:75,h:40},hP2={x:360,y:75,h:40},hB={x:200,y:100,vx:2,vy:2},hS1=0,hS2=0;
+function hockeyUp(){let c=document.getElementById('hockey');let ctx=c.getContext('2d');ctx.fillStyle='#006b3f';ctx.fillRect(0,0,400,200);hB.x+=hB.vx;hB.y+=hB.vy;if(hB.y<0||hB.y>200)hB.vy*=-1;if(hB.x<hP1.x+10&&hB.y>hP1.y&&hB.y<hP1.y+hP1.h)hB.vx*=-1;if(hB.x>hP2.x&&hB.y>hP2.y&&hB.y<hP2.y+hP2.h)hB.vx*=-1;if(hB.x<0){hS2++;hB={x:200,y:100,vx:2,vy:2}}if(hB.x>400){hS1++;hB={x:200,y:100,vx:-2,vy:2}}document.getElementById('h-you').innerText=hS1;document.getElementById('h-ai').innerText=hS2;ctx.fillStyle='#fff';ctx.fillRect(hP1.x,hP1.y,10,hP1.h);ctx.fillRect(hP2.x,hP2.y,10,hP2.h);ctx.fillStyle='#ffff00';ctx.beginPath();ctx.arc(hB.x,hB.y,5,0,Math.PI*2);ctx.fill()}
+setInterval(hockeyUp,30);
+let carromS=0;
+function carromAdd(){carromS+=10;document.getElementById('carrom').innerText=carromS}
+let ludoP1=0,ludoP2=0,ludoT=1;
+function ludoRoll(){let r=Math.floor(Math.random()*6)+1;if(ludoT===1){ludoP1=Math.min(ludoP1+r,100);ludoT=2}else{ludoP2=Math.min(ludoP2+r,100);ludoT=1}document.getElementById('ludo-text').innerText='Rolled: '+r;document.getElementById('ludo-p1').innerText=ludoP1;document.getElementById('ludo-p2').innerText=ludoP2;if(ludoP1===100)alert('P1 Wins!');if(ludoP2===100)alert('P2 Wins!')}
+document.getElementById('sudoku').innerHTML='<div style="display:inline-grid;grid-template-columns:repeat(9,30px);gap:2px">'+Array(81).fill(0).map(()=>'<input type="number" min="1" max="9" style="width:30px;height:30px;background:#222;color:#fff;border:1px solid #555;text-align:center">').join('')+'</div>';
+document.getElementById('chess').innerHTML=Array(8).fill(0).map((,i)=>Array(8).fill(0).map((,j)=>`<div style="width:40px;height:40px;background:${(i+j)%2===0?'#deb887':'#8b4513'};display:inline-block;border:1px solid #999"></div>`).join('')).join('<br>');
+let g2048=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],s2048=0;
+function add2048(){let e=[];for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(g2048[i][j]===0)e.push([i,j]);if(e.length){let[i,j]=e[Math.floor(Math.random()*e.length)];g2048[i][j]=Math.random()<0.9?2:4}}
+function draw2048(){let h='';for(let i=0;i<4;i++)for(let j=0;j<4;j++){let v=g2048[i][j];h+=`<div style="width:60px;height:60px;background:${v===0?'#222':v===2?'#eee4da':'#ede0c8'};display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;margin:3px;border-radius:3px">${v||''}</div>`}document.getElementById('game2048').innerHTML=h;document.getElementById('2048-score').innerText=s2048}
+add2048();add2048();draw2048();
+document.addEventListener('keydown',e=>{if(e.key.includes('Arrow')){s2048+=2;draw2048()}});
+</script>
 </body>
 </html>
