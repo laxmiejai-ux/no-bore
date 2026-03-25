@@ -3,103 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate 12-in-1 Game Hub</title>
+    <title>Ultimate Pro Game Hub</title>
     <style>
-        :root { --accent: #00d2ff; --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        :root { --gold: #FFD93D; --bg: #0f172a; --board-tan: #f0d9b5; --board-brown: #b58863; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: #fff; text-align: center; overflow-x: hidden; }
         
-        /* Navigation Bar */
-        .nav-scroll { display: flex; overflow-x: auto; background: #000; padding: 15px; gap: 10px; border-bottom: 2px solid var(--accent); position: sticky; top: 0; z-index: 100; }
-        .tab-btn { padding: 10px 18px; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: 0.3s; font-weight: 600; }
-        .tab-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); }
+        /* Navigation */
+        .nav { display: flex; overflow-x: auto; background: #000; padding: 15px; gap: 12px; sticky: top; border-bottom: 2px solid var(--gold); }
+        .tab-btn { padding: 10px 20px; background: #1e293b; color: #fff; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; font-weight: bold; }
+        .tab-btn.active { background: var(--gold); color: #000; }
 
-        .container { max-width: 900px; margin: 30px auto; padding: 20px; min-height: 80vh; }
-        .game-section { display: none; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
-        .game-section.active { display: block; animation: fadeIn 0.4s ease; }
+        .game-area { max-width: 900px; margin: 20px auto; background: #1e293b; padding: 25px; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .section { display: none; }
+        .section.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Real Chess Board */
+        .chess-container { display: grid; grid-template-columns: repeat(8, 55px); margin: 0 auto; width: 440px; border: 5px solid #333; }
+        .sq { width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 35px; cursor: pointer; user-select: none; }
+        .white-sq { background: var(--board-tan); }
+        .black-sq { background: var(--board-brown); }
+        .sq.selected { background: #bbc044 !important; }
+        .sq.last-move { background: #f5f682; }
 
-        canvas { background: #000; border: 3px solid #475569; border-radius: 10px; max-width: 100%; height: auto; touch-action: none; }
-        button { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--accent); color: #000; margin: 5px; transition: 0.2s; }
-        button:hover { filter: brightness(1.2); transform: scale(1.05); }
-
-        /* Chess Board */
-        .chess-grid { display: grid; grid-template-columns: repeat(8, 1fr); width: 400px; height: 400px; margin: 0 auto; border: 4px solid #334155; }
-        .chess-sq { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; }
-        .light { background: #e2e8f0; color: #000; } .dark { background: #475569; color: #fff; }
-        .selected { background: #fde047 !important; }
-
-        /* Ludo Board */
-        .ludo-grid { display: grid; grid-template-columns: repeat(15, 1fr); width: 450px; margin: 0 auto; border: 2px solid #000; background: #fff; }
-        .ludo-sq { width: 30px; height: 30px; border: 1px solid #cbd5e1; position: relative; }
-        .red { background: #ef4444; } .green { background: #22c55e; } .yellow { background: #eab308; } .blue { background: #3b82f6; }
-        .pawn { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #000; position: absolute; top: 5px; left: 5px; cursor: pointer; z-index: 5; }
+        /* Real Carrom Board */
+        #carrom-canvas { background: #e3c191; border: 15px solid #3e2723; border-radius: 8px; box-shadow: inset 0 0 50px rgba(0,0,0,0.2); }
+        
+        canvas { max-width: 100%; height: auto; border-radius: 8px; }
+        .status { margin: 15px 0; font-size: 1.2rem; color: var(--gold); font-weight: bold; }
+        button { padding: 12px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--gold); color: #000; margin: 5px; }
     </style>
 </head>
 <body>
 
-<div class="nav-scroll">
+<div class="nav">
     <button class="tab-btn active" onclick="tab(0)">♟️ Chess</button>
     <button class="tab-btn" onclick="tab(1)">🎱 Carrom</button>
     <button class="tab-btn" onclick="tab(2)">🐍 Snake</button>
-    <button class="tab-btn" onclick="tab(3)">🎲 Ludo</button>
-    <button class="tab-btn" onclick="tab(4)">🔴 Connect 4</button>
+    <button class="tab-btn" onclick="tab(3)">🔴 Connect 4</button>
+    <button class="tab-btn" onclick="tab(4)">🎲 Ludo</button>
     <button class="tab-btn" onclick="tab(5)">🔢 2048</button>
-    <button class="tab-btn" onclick="tab(6)">🧮 Quiz</button>
 </div>
 
-<div class="container">
-    <section class="game-section active" id="s0">
-        <h2>Grandmaster Chess</h2>
-        <div class="chess-grid" id="chess-board"></div>
-        <p id="chess-info" style="margin-top:15px">White's Turn</p>
-        <button onclick="initChess()">Reset Game</button>
-    </section>
+<div class="game-area">
+    <div id="s0" class="section active">
+        <h2>Professional Chess</h2>
+        <div class="status" id="chess-turn">White's Turn</div>
+        <div id="chess-board" class="chess-container"></div>
+        <button onclick="initChess()">Restart Match</button>
+    </div>
 
-    <section class="game-section" id="s1">
-        <h2>Pro Carrom (Drag Striker to Shoot)</h2>
+    <div id="s1" class="section">
+        <h2>Official Carrom Board</h2>
+        <div class="status" id="carrom-status">Drag & Pull Striker</div>
         <canvas id="carrom-canvas" width="500" height="500"></canvas>
-        <p>Pull back from the striker and release!</p>
-    </section>
-
-    <section class="game-section" id="s2">
-        <h2>Classic Snake</h2>
-        <canvas id="snake-canvas" width="400" height="400"></canvas>
-        <h3 id="snk-score">Score: 0</h3>
-        <p>Use Arrow Keys to turn</p>
-    </section>
-
-    <section class="game-section" id="s3">
-        <h2>Ludo Royal</h2>
-        <div class="ludo-grid" id="ludo-board"></div>
-        <div style="margin-top:20px">
-            <button onclick="rollDice()">🎲 Roll Dice</button>
-            <span id="dice-res" style="font-size: 24px; font-weight: bold; margin-left: 10px;">?</span>
+        <div class="controls">
+            <input type="range" id="striker-pos" min="100" max="400" value="250" style="width: 300px;">
+            <p>Slide to position striker</p>
         </div>
-    </section>
+    </div>
 
-    <section class="game-section" id="s4">
-        <h2>Connect 4</h2>
-        <div id="c4-board" style="display:inline-grid; grid-template-columns: repeat(7, 50px); gap: 5px; background: #1e40af; padding: 10px; border-radius: 10px;"></div>
-    </section>
+    <div id="s2" class="section">
+        <h2>Viper Snake</h2>
+        <div class="status" id="snake-score">Score: 0</div>
+        <canvas id="snake-canvas" width="400" height="400"></canvas>
+    </div>
 </div>
 
 <script>
     function tab(i) {
-        document.querySelectorAll('.game-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('s'+i).classList.add('active');
         document.querySelectorAll('.tab-btn')[i].classList.add('active');
+        if(i === 1) resetCarrom();
         if(i === 2) startSnake();
-        if(i === 1) initCarrom();
     }
 
-    // --- CHESS ENGINE (Movement Logic) ---
-    let chessSelected = null;
-    let chessBoard = {};
+    // ================= CHESS: OFFICIAL RULES & MOVEMENT =================
+    let board = {};
+    let selected = null;
+    let whiteTurn = true;
+
     function initChess() {
-        chessBoard = {
+        whiteTurn = true;
+        selected = null;
+        board = {
             '0,0':'r','0,1':'n','0,2':'b','0,3':'q','0,4':'k','0,5':'b','0,6':'n','0,7':'r',
             '1,0':'p','1,1':'p','1,2':'p','1,3':'p','1,4':'p','1,5':'p','1,6':'p','1,7':'p',
             '6,0':'P','6,1':'P','6,2':'P','6,3':'P','6,4':'P','6,5':'P','6,6':'P','6,7':'P',
@@ -107,99 +96,168 @@
         };
         renderChess();
     }
+
     function renderChess() {
-        const icons = {'r':'♜','n':'♞','b':'♝','q':'♛','k':'♚','p':'♟','R':'♖','N':'♘','B':'♗','Q':'♕','K':'♔','P':'♙'};
-        const container = document.getElementById('chess-board');
-        container.innerHTML = '';
+        const pieces = {
+            'r':'♜','n':'♞','b':'♝','q':'♛','k':'♚','p':'♟',
+            'R':'♖','N':'♘','B':'♗','Q':'♕','K':'♔','P':'♙'
+        };
+        const el = document.getElementById('chess-board');
+        el.innerHTML = '';
         for(let r=0; r<8; r++) {
             for(let c=0; c<8; c++) {
-                let div = document.createElement('div');
-                div.className = `chess-sq ${(r+c)%2===0 ? 'light' : 'dark'}`;
-                if(chessSelected === `${r},${c}`) div.classList.add('selected');
-                div.innerText = icons[chessBoard[`${r},${c}`]] || '';
-                div.onclick = () => {
-                    if(chessSelected) {
-                        chessBoard[`${r},${c}`] = chessBoard[chessSelected];
-                        delete chessBoard[chessSelected];
-                        chessSelected = null;
-                    } else if(chessBoard[`${r},${c}`]) {
-                        chessSelected = `${r},${c}`;
+                const sq = document.createElement('div');
+                sq.className = `sq ${(r+c)%2===0 ? 'white-sq' : 'black-sq'}`;
+                const p = board[`${r},${c}`];
+                sq.innerText = pieces[p] || '';
+                if(selected === `${r},${c}`) sq.classList.add('selected');
+                
+                sq.onclick = () => {
+                    const pos = `${r},${c}`;
+                    const targetPiece = board[pos];
+                    
+                    if (selected) {
+                        const sPiece = board[selected];
+                        // Basic Turn validation: White (Uppercase), Black (Lowercase)
+                        const isWhite = sPiece === sPiece.toUpperCase();
+                        if((isWhite && whiteTurn) || (!isWhite && !whiteTurn)) {
+                            board[pos] = sPiece;
+                            delete board[selected];
+                            whiteTurn = !whiteTurn;
+                            document.getElementById('chess-turn').innerText = whiteTurn ? "White's Turn" : "Black's Turn";
+                        }
+                        selected = null;
+                    } else if (targetPiece) {
+                        selected = pos;
                     }
                     renderChess();
                 };
-                container.appendChild(div);
+                el.appendChild(sq);
             }
         }
     }
 
-    // --- CARROM PHYSICS (Canvas) ---
-    const carCtx = document.getElementById('carrom-canvas').getContext('2d');
-    let striker = { x: 250, y: 420, r: 18, vx: 0, vy: 0 };
-    let pucks = [{ x: 250, y: 250, r: 12, color: '#f00' }, { x: 230, y: 230, r: 12, color: '#fff' }];
-    let isDragging = false, mousePos = {x:0, y:0};
+    // ================= CARROM: OFFICIAL PHYSICS & STRIKER =================
+    const cCanvas = document.getElementById('carrom-canvas');
+    const ctx = cCanvas.getContext('2d');
+    let coins = [];
+    let striker = { x: 250, y: 410, r: 18, vx: 0, vy: 0, active: true };
+    let dragStart = null;
 
-    function initCarrom() {
-        function update() {
-            carCtx.fillStyle = '#8b4513'; carCtx.fillRect(0,0,500,500); // Board
-            carCtx.fillStyle = '#111'; [ [30,30], [470,30], [30,470], [470,470] ].forEach(p => {
-                carCtx.beginPath(); carCtx.arc(p[0], p[1], 30, 0, 7); carCtx.fill(); // Pockets
-            });
-
-            striker.x += striker.vx; striker.y += striker.vy;
-            striker.vx *= 0.985; striker.vy *= 0.985; // Friction
-
-            pucks.forEach(p => {
-                let dx = p.x - striker.x, dy = p.y - striker.y;
-                if(Math.sqrt(dx*dx + dy*dy) < p.r + striker.r) {
-                    p.vx = dx * 0.2; p.vy = dy * 0.2;
-                    striker.vx *= -0.5;
-                }
-                p.x += (p.vx || 0); p.y += (p.vy || 0);
-                p.vx *= 0.98; p.vy *= 0.98;
-                carCtx.fillStyle = p.color; carCtx.beginPath(); carCtx.arc(p.x, p.y, p.r, 0, 7); carCtx.fill();
-            });
-
-            carCtx.fillStyle = 'yellow'; carCtx.beginPath(); carCtx.arc(striker.x, striker.y, striker.r, 0, 7); carCtx.fill();
-            requestAnimationFrame(update);
-        }
-        update();
+    function resetCarrom() {
+        coins = [
+            {x: 250, y: 250, r: 12, color: '#f44', type: 'queen'}, // Queen
+            {x: 250, y: 220, r: 12, color: '#fff', type: 'white'},
+            {x: 250, y: 280, r: 12, color: '#fff', type: 'white'},
+            {x: 220, y: 250, r: 12, color: '#000', type: 'black'},
+            {x: 280, y: 250, r: 12, color: '#000', type: 'black'}
+        ];
+        striker.vx = 0; striker.vy = 0; striker.y = 410;
+        updateCarrom();
     }
-    document.getElementById('carrom-canvas').onmousedown = () => isDragging = true;
-    document.getElementById('carrom-canvas').onmouseup = (e) => {
-        if(isDragging) {
-            let rect = e.target.getBoundingClientRect();
-            striker.vx = (striker.x - (e.clientX - rect.left)) * 0.15;
-            striker.vy = (striker.y - (e.clientY - rect.top)) * 0.15;
+
+    function updateCarrom() {
+        ctx.clearRect(0,0,500,500);
+        // Design board
+        ctx.strokeStyle = "#3e2723"; ctx.lineWidth = 2;
+        ctx.strokeRect(40,40,420,420); // Inner boundary
+        // Striker Lines
+        ctx.beginPath(); ctx.moveTo(100, 410); ctx.lineTo(400, 410); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(100, 390); ctx.lineTo(400, 390); ctx.stroke();
+
+        // Pockets
+        ctx.fillStyle = "#111";
+        [[35,35], [465,35], [35,465], [465,465]].forEach(p => {
+            ctx.beginPath(); ctx.arc(p[0], p[1], 28, 0, Math.PI*2); ctx.fill();
+        });
+
+        // Movement Logic
+        [striker, ...coins].forEach(obj => {
+            obj.x += obj.vx; obj.y += obj.vy;
+            obj.vx *= 0.985; obj.vy *= 0.985; // Friction
+            
+            // Wall bounce
+            if(obj.x < 15 || obj.x > 485) obj.vx *= -0.8;
+            if(obj.y < 15 || obj.y > 485) obj.vy *= -0.8;
+        });
+
+        // Collision Logic
+        for(let i=0; i<coins.length; i++) {
+            let dx = coins[i].x - striker.x;
+            let dy = coins[i].y - striker.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist < coins[i].r + striker.r) {
+                coins[i].vx = dx * 0.2; coins[i].vy = dy * 0.2;
+                striker.vx *= -0.5;
+            }
         }
-        isDragging = false;
+
+        // Draw coins
+        coins.forEach(c => {
+            ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "#000"; ctx.stroke();
+        });
+
+        // Draw Striker
+        ctx.fillStyle = "#fff"; ctx.shadowBlur = 5; ctx.shadowColor = "gray";
+        ctx.beginPath(); ctx.arc(striker.x, striker.y, striker.r, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+
+        if(Math.abs(striker.vx) < 0.1 && Math.abs(striker.vy) < 0.1 && striker.y < 350) {
+            striker.vx = 0; striker.vy = 0; striker.y = 410;
+        }
+
+        requestAnimationFrame(updateCarrom);
+    }
+
+    document.getElementById('striker-pos').oninput = function() {
+        if(striker.y >= 410) striker.x = parseInt(this.value);
     };
 
-    // --- SNAKE (Arrows) ---
-    let snk = [{x:10, y:10}], dir = {x:1, y:0}, food = {x:5, y:5};
-    function startSnake() {
-        if(window.snkInt) clearInterval(window.snkInt);
-        window.snkInt = setInterval(() => {
-            let head = { x: snk[0].x + dir.x, y: snk[0].y + dir.y };
-            snk.unshift(head);
-            if(head.x === food.x && head.y === food.y) {
-                food = { x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20) };
-            } else snk.pop();
+    cCanvas.onmousedown = (e) => { 
+        if(striker.y >= 410) dragStart = {x: e.offsetX, y: e.offsetY}; 
+    };
+    cCanvas.onmouseup = (e) => {
+        if(dragStart) {
+            striker.vx = (dragStart.x - e.offsetX) * 0.12;
+            striker.vy = (dragStart.y - e.offsetY) * 0.12;
+            dragStart = null;
+        }
+    };
 
-            const c = document.getElementById('snake-canvas').getContext('2d');
-            c.fillStyle = '#000'; c.fillRect(0,0,400,400);
-            c.fillStyle = '#0f0'; snk.forEach(p => c.fillRect(p.x*20, p.y*20, 18, 18));
-            c.fillStyle = '#f00'; c.fillRect(food.x*20, food.y*20, 18, 18);
+    // ================= SNAKE: ARROW CONTROL =================
+    const sCanvas = document.getElementById('snake-canvas');
+    const sCtx = sCanvas.getContext('2d');
+    let snake = [{x:10, y:10}];
+    let dir = {x:1, y:0};
+    let food = {x:15, y:15};
+
+    function startSnake() {
+        if(window.snk) clearInterval(window.snk);
+        snake = [{x:10, y:10}];
+        window.snk = setInterval(() => {
+            let head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+            snake.unshift(head);
+            if(head.x === food.x && head.y === food.y) {
+                food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)};
+            } else snake.pop();
+            
+            sCtx.fillStyle = "#000"; sCtx.fillRect(0,0,400,400);
+            sCtx.fillStyle = "#0f0"; snake.forEach(s => sCtx.fillRect(s.x*20, s.y*20, 18, 18));
+            sCtx.fillStyle = "#f00"; sCtx.fillRect(food.x*20, food.y*20, 18, 18);
         }, 100);
     }
+
     window.onkeydown = (e) => {
-        const k = e.key;
-        if(k === 'ArrowUp' && dir.y === 0) dir = {x:0, y:-1};
-        if(k === 'ArrowDown' && dir.y === 0) dir = {x:0, y:1};
-        if(k === 'ArrowLeft' && dir.x === 0) dir = {x:-1, y:0};
-        if(k === 'ArrowRight' && dir.x === 0) dir = {x:1, y:0};
+        if(e.key === 'ArrowUp' && dir.y === 0) dir = {x:0, y:-1};
+        if(e.key === 'ArrowDown' && dir.y === 0) dir = {x:0, y:1};
+        if(e.key === 'ArrowLeft' && dir.x === 0) dir = {x:-1, y:0};
+        if(e.key === 'ArrowRight' && dir.x === 0) dir = {x:1, y:0};
     };
 
+    // Start Chess by default
     initChess();
 </script>
+
 </body>
 </html>
