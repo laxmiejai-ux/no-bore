@@ -1,91 +1,182 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tic Tac Toe</title>
+  <title>Two Player Games Hub</title>
   <style>
-    body { font-family: Arial; text-align: center; }
-    .board { display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; margin: 20px auto; }
-    .cell { width: 100px; height: 100px; font-size: 2em; display: flex; align-items: center; justify-content: center; border: 2px solid #333; cursor: pointer; }
+    body { background: black; color: white; font-family: Arial; text-align: center; }
+    .menu { margin: 20px; }
+    .board { display: grid; margin: 20px auto; }
+    .cell { border: 2px solid #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 2em; }
+    .blue { color: blue; }
+    .red { color: red; }
   </style>
 </head>
 <body>
-  <h1>Tic Tac Toe</h1>
-  <button onclick="setMode('friend')">Play with Friend</button>
-  <button onclick="setMode('bot')">Play with Bot</button>
-  <div class="board" id="board"></div>
+  <h1>🎮 Two Player Games Hub</h1>
+  <div class="menu">
+    <button onclick="startGame('tictactoe')">Tic Tac Toe</button>
+    <button onclick="startGame('connectfour')">Connect Four</button>
+    <!-- Add more games here -->
+  </div>
+  <div>
+    <button onclick="setMode('friend')">Play with Friend</button>
+    <button onclick="setMode('bot')">Play with Bot</button>
+  </div>
   <p id="status"></p>
+  <div id="gameArea"></div>
 
   <script>
-    let board = ["","","","","","","","",""];
-    let currentPlayer = "X";
     let mode = "friend";
+    let currentPlayer = "blue"; // blue starts
     let gameOver = false;
+    let board = [];
+    let activeGame = "";
 
     function setMode(m) {
       mode = m;
-      resetGame();
+      document.getElementById("status").innerText = "Mode: " + m;
     }
 
-    function resetGame() {
-      board = ["","","","","","","","",""];
-      currentPlayer = "X";
+    function startGame(game) {
+      activeGame = game;
       gameOver = false;
-      document.getElementById("status").innerText = "Player X's turn";
-      renderBoard();
+      currentPlayer = "blue";
+      if (game === "tictactoe") initTicTacToe();
+      if (game === "connectfour") initConnectFour();
     }
 
-    function renderBoard() {
-      const boardDiv = document.getElementById("board");
-      boardDiv.innerHTML = "";
+    // ------------------ TIC TAC TOE ------------------
+    function initTicTacToe() {
+      board = Array(9).fill("");
+      const area = document.getElementById("gameArea");
+      area.innerHTML = "";
+      const grid = document.createElement("div");
+      grid.className = "board";
+      grid.style.gridTemplateColumns = "repeat(3,100px)";
       board.forEach((cell, i) => {
         const div = document.createElement("div");
         div.className = "cell";
-        div.innerText = cell;
-        div.onclick = () => makeMove(i);
-        boardDiv.appendChild(div);
+        div.style.width = "100px"; div.style.height = "100px";
+        div.onclick = () => makeMoveTicTacToe(i);
+        grid.appendChild(div);
+      });
+      area.appendChild(grid);
+      document.getElementById("status").innerText = "Tic Tac Toe: Blue starts";
+    }
+
+    function makeMoveTicTacToe(i) {
+      if (board[i] !== "" || gameOver) return;
+      board[i] = currentPlayer;
+      renderTicTacToe();
+      if (checkWinnerTicTacToe()) return;
+      currentPlayer = currentPlayer === "blue" ? "red" : "blue";
+      document.getElementById("status").innerText = currentPlayer + "'s turn";
+      if (mode === "bot" && currentPlayer === "red") botMoveTicTacToe();
+    }
+
+    function renderTicTacToe() {
+      const cells = document.querySelectorAll(".cell");
+      board.forEach((val, i) => {
+        cells[i].innerText = val === "" ? "" : (val === "blue" ? "X" : "O");
+        cells[i].className = "cell " + val;
       });
     }
 
-    function makeMove(i) {
-      if (board[i] !== "" || gameOver) return;
-      board[i] = currentPlayer;
-      checkWinner();
-      if (!gameOver) {
-        currentPlayer = currentPlayer === "X" ? "O" : "X";
-        document.getElementById("status").innerText = `Player ${currentPlayer}'s turn`;
-        if (mode === "bot" && currentPlayer === "O") botMove();
-      }
-      renderBoard();
+    function botMoveTicTacToe() {
+      let empty = board.map((c,i)=>c===""?i:null).filter(i=>i!==null);
+      let choice = empty[Math.floor(Math.random()*empty.length)];
+      makeMoveTicTacToe(choice);
     }
 
-    function botMove() {
-      // Simple bot: pick random empty cell
-      let emptyCells = board.map((c, i) => c === "" ? i : null).filter(i => i !== null);
-      let choice = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-      makeMove(choice);
-    }
-
-    function checkWinner() {
-      const wins = [
-        [0,1,2],[3,4,5],[6,7,8], // rows
-        [0,3,6],[1,4,7],[2,5,8], // cols
-        [0,4,8],[2,4,6]          // diagonals
-      ];
-      for (let combo of wins) {
-        const [a,b,c] = combo;
-        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-          document.getElementById("status").innerText = `Player ${board[a]} wins!`;
-          gameOver = true;
-          return;
+    function checkWinnerTicTacToe() {
+      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      for (let [a,b,c] of wins) {
+        if (board[a] && board[a]===board[b] && board[a]===board[c]) {
+          document.getElementById("status").innerText = board[a]+" wins!";
+          gameOver = true; return true;
         }
       }
       if (!board.includes("")) {
-        document.getElementById("status").innerText = "It's a draw!";
-        gameOver = true;
+        document.getElementById("status").innerText = "Draw!";
+        gameOver = true; return true;
+      }
+      return false;
+    }
+
+    // ------------------ CONNECT FOUR ------------------
+    let rows=6, cols=7;
+    function initConnectFour() {
+      board = Array(rows).fill().map(()=>Array(cols).fill(""));
+      const area = document.getElementById("gameArea");
+      area.innerHTML = "";
+      const grid = document.createElement("div");
+      grid.className = "board";
+      grid.style.gridTemplateColumns = "repeat(7,60px)";
+      for (let r=0;r<rows;r++) {
+        for (let c=0;c<cols;c++) {
+          const div = document.createElement("div");
+          div.className = "cell";
+          div.style.width="60px"; div.style.height="60px";
+          div.onclick = () => makeMoveConnectFour(c);
+          grid.appendChild(div);
+        }
+      }
+      area.appendChild(grid);
+      document.getElementById("status").innerText = "Connect Four: Blue starts";
+      renderConnectFour();
+    }
+
+    function makeMoveConnectFour(col) {
+      if (gameOver) return;
+      for (let r=rows-1;r>=0;r--) {
+        if (board[r][col]==="") {
+          board[r][col]=currentPlayer;
+          renderConnectFour();
+          if (checkWinnerConnectFour()) return;
+          currentPlayer = currentPlayer==="blue"?"red":"blue";
+          document.getElementById("status").innerText = currentPlayer+"'s turn";
+          if (mode==="bot" && currentPlayer==="red") botMoveConnectFour();
+          return;
+        }
       }
     }
 
-    resetGame();
+    function renderConnectFour() {
+      const cells = document.querySelectorAll(".cell");
+      let idx=0;
+      for (let r=0;r<rows;r++) {
+        for (let c=0;c<cols;c++) {
+          cells[idx].innerText = board[r][c]===""?"":(board[r][c]==="blue"?"●":"●");
+          cells[idx].className = "cell "+board[r][c];
+          idx++;
+        }
+      }
+    }
+
+    function botMoveConnectFour() {
+      let choice = Math.floor(Math.random()*cols);
+      makeMoveConnectFour(choice);
+    }
+
+    function checkWinnerConnectFour() {
+      // check horizontal, vertical, diagonal
+      for (let r=0;r<rows;r++) {
+        for (let c=0;c<cols;c++) {
+          let player=board[r][c];
+          if (!player) continue;
+          if (c+3<cols && player===board[r][c+1] && player===board[r][c+2] && player===board[r][c+3]) return declareWinner(player);
+          if (r+3<rows && player===board[r+1][c] && player===board[r+2][c] && player===board[r+3][c]) return declareWinner(player);
+          if (r+3<rows && c+3<cols && player===board[r+1][c+1] && player===board[r+2][c+2] && player===board[r+3][c+3]) return declareWinner(player);
+          if (r-3>=0 && c+3<cols && player===board[r-1][c+1] && player===board[r-2][c+2] && player===board[r-3][c+3]) return declareWinner(player);
+        }
+      }
+      return false;
+    }
+
+    function declareWinner(player) {
+      document.getElementById("status").innerText = player+" wins!";
+      gameOver=true; return true;
+    }
   </script>
 </body>
 </html>
