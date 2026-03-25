@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NoBore 😎</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial;
+      background: #111;
+      color: white;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Welcome to NoBore 🔥</h1>
+  <p>Click if you're bored 😏</p>
+
+  <button onclick="giveTask()">I'm Bored</button>
+
+  <h2 id="task"></h2>
+
+  <script>
+    function giveTask() {
+      let tasks = [
+        "Do 20 pushups 💪",
+        "Watch a funny video 😂",
+        "Go for a 5 min walk 🚶",
+        "Drink water 💧",
+        "Text a friend 🤝",
+        "Practice badminton 🏸"
+      ];
+
+      let random = Math.floor(Math.random() * tasks.length);
+      document.getElementById("task").innerText = tasks[random];
+    }
+  </script>
+
+</body>
+</html>
