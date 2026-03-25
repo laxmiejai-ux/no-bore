@@ -26,14 +26,6 @@
         .player-info { font-size: 18px; margin: 15px 0; color: #FFD93D; }
         .hidden { display: none !important; }
         
-        .ludo-board { display: grid; grid-template-columns: repeat(16, 25px); gap: 1px; margin: 20px auto; width: fit-content; background: #000; }
-        .ludo-cell { width: 25px; height: 25px; background: #555; border: 1px solid #999; display: flex; align-items: center; justify-content: center; font-size: 8px; position: relative; }
-        .ludo-cell.safe { background: #FFD700; }
-        .ludo-cell.home { background: #00FF00; }
-        .ludo-piece { width: 18px; height: 18px; border-radius: 50%; position: absolute; cursor: pointer; border: 2px solid #000; }
-        .ludo-p1 { background: #FF0000; }
-        .ludo-p2 { background: #00FF00; }
-        
         .carrom-board { width: 350px; height: 350px; background: linear-gradient(135deg, #8B4513, #A0522D); border: 8px solid #000; margin: 20px auto; position: relative; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
         .carrom-center { width: 30px; height: 30px; background: #FFD700; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .carrom-piece { width: 18px; height: 18px; border-radius: 50%; position: absolute; cursor: pointer; border: 2px solid #000; transition: all 0.3s; }
@@ -41,6 +33,13 @@
         .carrom-piece.black { background: #000; }
         .carrom-piece.red { background: #ff0000; }
         .carrom-pocket { width: 25px; height: 25px; background: #000; border-radius: 50%; position: absolute; border: 2px solid #333; }
+        
+        .ludo-board { display: grid; grid-template-columns: repeat(16, 25px); gap: 1px; margin: 20px auto; width: fit-content; background: #000; }
+        .ludo-cell { width: 25px; height: 25px; background: #555; border: 1px solid #999; display: flex; align-items: center; justify-content: center; font-size: 8px; position: relative; }
+        .ludo-cell.safe { background: #FFD700; }
+        .ludo-piece { width: 18px; height: 18px; border-radius: 50%; position: absolute; cursor: pointer; border: 2px solid #000; }
+        .ludo-p1 { background: #FF0000; }
+        .ludo-p2 { background: #00FF00; }
         
         .chess-board { display: grid; grid-template-columns: repeat(8, 40px); gap: 0; margin: 20px auto; }
         .chess-cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
@@ -91,13 +90,13 @@
 
 <!-- ROCK PAPER SCISSORS -->
 <div class="game-section">
-    <h2>✂️ Rock Paper Scissors - Speed Mode (3 Sec)</h2>
+    <h2>✂️ Rock Paper Scissors</h2>
     <div id="rps-mode-select" class="mode-select">
         <button class="mode-btn" onclick="startRPS('friend')">👥 Friend</button>
         <button class="mode-btn" onclick="startRPS('bot')">🤖 Bot</button>
     </div>
     <div id="rps-game" class="hidden">
-        <p class="player-info" id="rps-turn">3 Sec to Choose!</p>
+        <p class="player-info" id="rps-turn">Choose!</p>
         <button onclick="rpsPlay('rock')">🪨 Rock</button>
         <button onclick="rpsPlay('paper')">📄 Paper</button>
         <button onclick="rpsPlay('scissors')">✂️ Scissors</button>
@@ -134,8 +133,8 @@
 
 <!-- SNAKE - FASTER & HARDER -->
 <div class="game-section">
-    <h2>🐍 Snake - FAST & FURIOUS!</h2>
-    <p>⚠️ Arrow Keys - Speed Increases! ⚠️</p>
+    <h2>🐍 Snake - Use Arrow Keys!</h2>
+    <p>⚠️ Arrow Keys to Control ⚠️</p>
     <canvas id="snake-canvas" width="300" height="300"></canvas>
     <p>Score: <span id="snake-score">0</span> | Speed: <span id="snake-speed">1</span></p>
 </div>
@@ -150,7 +149,7 @@
 
 <!-- CARROM - REAL RULES -->
 <div class="game-section">
-    <h2>🎱 Carrom - Real Rules!</h2>
+    <h2>🎱 Carrom - Click Pieces!</h2>
     <div id="carrom-mode-select" class="mode-select">
         <button class="mode-btn" onclick="startCarrom('friend')">👥 Friend</button>
         <button class="mode-btn" onclick="startCarrom('bot')">🤖 Bot</button>
@@ -173,17 +172,16 @@
 
 <!-- LUDO - PROPER BOARD -->
 <div class="game-section">
-    <h2>🎲 Ludo - Proper 4-Pawn Game!</h2>
+    <h2>🎲 Ludo - Roll & Move!</h2>
     <div id="ludo-mode-select" class="mode-select">
         <button class="mode-btn" onclick="startLudo('friend')">👥 Friend</button>
         <button class="mode-btn" onclick="startLudo('bot')">🤖 Bot</button>
     </div>
     <div id="ludo-game" class="hidden">
-        <div class="ludo-board" id="ludo-board"></div>
         <p class="player-info" id="ludo-turn">Player 1's Turn</p>
         <p id="ludo-dice">Dice: - | Last Roll: -</p>
         <button onclick="ludoRoll()">🎲 Roll Dice</button>
-        <p>P1 (Red): <span id="ludo-p1">0</span>/4 | P2 (Green): <span id="ludo-p2">0</span>/4</p>
+        <p>P1 (Red): <span id="ludo-p1">0</span>/100 | P2 (Green): <span id="ludo-p2">0</span>/100</p>
         <button onclick="resetLudo()">Back</button>
     </div>
 </div>
@@ -199,9 +197,11 @@
 </div>
 
 <!-- 2048 -->
-<div class="game-section"><h2>2048 - Harder Grid!</h2><div id="game2048"></div><p>Score: <span id="2048-score">0</span></p></div>
+<div class="game-section"><h2>2048</h2><div id="game2048"></div><p>Score: <span id="2048-score">0</span></p></div>
 
 <script>
+let snakeRunning = false;
+
 function switchTab(i){
     let s=document.querySelectorAll('.game-section');
     let b=document.querySelectorAll('.tab-btn');
@@ -247,7 +247,6 @@ function tttPlay(i){
     }
 }
 function tttAIHard(){
-    // Minimax AI - Always plays optimally
     let bestScore=-Infinity;
     let bestMove=null;
     for(let i=0;i<9;i++){
@@ -324,8 +323,8 @@ function resetTTT(){
     updateTTT();
 }
 
-// ===== ROCK PAPER SCISSORS - SPEED MODE =====
-let rpsMode='',rpsP1Wins=0,rpsP2Wins=0,rpsP1Choice='',rpsP2Choice='',rpsTimer=null;
+// ===== ROCK PAPER SCISSORS =====
+let rpsMode='',rpsP1Wins=0,rpsP2Wins=0,rpsP1Choice='',rpsP2Choice='';
 function startRPS(mode){
     rpsMode=mode;
     rpsP1Wins=0;
@@ -334,24 +333,19 @@ function startRPS(mode){
     rpsP2Choice='';
     document.getElementById('rps-mode-select').classList.add('hidden');
     document.getElementById('rps-game').classList.remove('hidden');
-    document.getElementById('rps-turn').innerText = rpsMode==='friend' ? 'Player 1: 3 SEC!' : 'YOU: 3 SEC!';
-    document.getElementById('rps-you').innerText='-';
-    document.getElementById('rps-opp').innerText='-';
-    document.getElementById('rps-wins').innerText='0';
-    document.getElementById('rps-opp-wins').innerText='0';
+    document.getElementById('rps-turn').innerText = rpsMode==='friend' ? 'Player 1: Choose' : 'Your Turn';
 }
 function rpsPlay(choice){
     if(rpsMode==='friend'){
         if(rpsP1Choice===''){
             rpsP1Choice=choice;
-            document.getElementById('rps-turn').innerText='Player 2: 3 SEC!';
-            setTimeout(()=>{if(rpsP2Choice==='')rpsP2Choice='rock';rpsDecide();},3000);
-        }else if(rpsP2Choice===''){
+            document.getElementById('rps-turn').innerText='Player 2: Choose';
+        }else{
             rpsP2Choice=choice;
             rpsDecide();
             rpsP1Choice='';
             rpsP2Choice='';
-            document.getElementById('rps-turn').innerText='Player 1: 3 SEC!';
+            document.getElementById('rps-turn').innerText='Player 1: Choose';
         }
     }else{
         rpsP1Choice=choice;
@@ -433,10 +427,12 @@ function resetHangman(){
     document.getElementById('hangman-game').classList.add('hidden');
 }
 
-// ===== SNAKE - FAST & FURIOUS =====
-let snakeB=[{x:10,y:10}],snakeF={x:15,y:15},snakeD={x:1,y:0},snakeS=0,snakeSpeed=2,snakeLevel=1;
+// ===== SNAKE - FIXED =====
+let snakeB=[{x:10,y:10}],snakeF={x:15,y:15},snakeD={x:1,y:0},snakeNextD={x:1,y:0},snakeS=0,snakeSpeed=100,snakeLevel=1,snakeInterval=null;
+
 function snakeDraw(){
     let c=document.getElementById('snake-canvas');
+    if(!c)return;
     let ctx=c.getContext('2d');
     ctx.fillStyle='#000';
     ctx.fillRect(0,0,300,300);
@@ -445,35 +441,70 @@ function snakeDraw(){
     ctx.fillStyle='#f00';
     ctx.fillRect(snakeF.x*10,snakeF.y*10,8,8);
 }
+
 function snakeUpdate(){
+    snakeD=snakeNextD;
     let h={x:snakeB[0].x+snakeD.x,y:snakeB[0].y+snakeD.y};
-    if(h.x<0||h.x>29||h.y<0||h.y>29){alert('Game Over! Score: '+snakeS);snakeReset();return;}
-    for(let i=0;i<snakeB.length;i++)if(h.x===snakeB[i].x&&h.y===snakeB[i].y){alert('Game Over! Score: '+snakeS);snakeReset();return;}
+    
+    if(h.x<0||h.x>29||h.y<0||h.y>29){
+        clearInterval(snakeInterval);
+        alert('Game Over! Score: '+snakeS);
+        snakeReset();
+        return;
+    }
+    
+    for(let i=0;i<snakeB.length;i++){
+        if(h.x===snakeB[i].x&&h.y===snakeB[i].y){
+            clearInterval(snakeInterval);
+            alert('Game Over! Score: '+snakeS);
+            snakeReset();
+            return;
+        }
+    }
+    
     if(h.x===snakeF.x&&h.y===snakeF.y){
         snakeS+=10;
         snakeLevel=Math.floor(snakeS/50)+1;
-        snakeSpeed=2+snakeLevel;
+        snakeSpeed=Math.max(50,100-snakeLevel*5);
+        clearInterval(snakeInterval);
+        snakeInterval=setInterval(snakeUpdate,snakeSpeed);
         document.getElementById('snake-score').innerText=snakeS;
         document.getElementById('snake-speed').innerText=snakeLevel;
         snakeF={x:Math.floor(Math.random()*30),y:Math.floor(Math.random()*30)};
-    }else snakeB.pop();
+    }else{
+        snakeB.pop();
+    }
+    
     snakeB.unshift(h);
     snakeDraw();
 }
-let snakeInterval=setInterval(snakeUpdate,100/snakeSpeed);
-snakeDraw();
-function snakeReset(){snakeB=[{x:10,y:10}];snakeS=0;snakeSpeed=2;snakeLevel=1;snakeDraw();}
+
+function snakeReset(){
+    if(snakeInterval)clearInterval(snakeInterval);
+    snakeB=[{x:10,y:10}];
+    snakeD={x:1,y:0};
+    snakeNextD={x:1,y:0};
+    snakeS=0;
+    snakeSpeed=100;
+    snakeLevel=1;
+    snakeDraw();
+}
+
 document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowUp'&&snakeD.y===0){snakeD={x:0,y:-1};e.preventDefault();}
-    if(e.key==='ArrowDown'&&snakeD.y===0){snakeD={x:0,y:1};e.preventDefault();}
-    if(e.key==='ArrowLeft'&&snakeD.x===0){snakeD={x:-1,y:0};e.preventDefault();}
-    if(e.key==='ArrowRight'&&snakeD.x===0){snakeD={x:1,y:0};e.preventDefault();}
+    if(e.key==='ArrowUp'&&snakeD.y===0){snakeNextD={x:0,y:-1};e.preventDefault();}
+    if(e.key==='ArrowDown'&&snakeD.y===0){snakeNextD={x:0,y:1};e.preventDefault();}
+    if(e.key==='ArrowLeft'&&snakeD.x===0){snakeNextD={x:-1,y:0};e.preventDefault();}
+    if(e.key==='ArrowRight'&&snakeD.x===0){snakeNextD={x:1,y:0};e.preventDefault();}
 });
 
-// ===== HOCKEY - SUPER FAST AI =====
+snakeInterval=setInterval(snakeUpdate,100);
+snakeDraw();
+
+// ===== HOCKEY =====
 let p1={x:20,y:75,h:40},p2={x:360,y:75,h:40},ball={x:200,y:100,vx:3,vy:3},hS1=0,hS2=0;
 function hUp(){
     let c=document.getElementById('hockey-canvas');
+    if(!c)return;
     let ctx=c.getContext('2d');
     ctx.fillStyle='#006b3f';
     ctx.fillRect(0,0,400,200);
@@ -496,13 +527,16 @@ function hUp(){
 }
 setInterval(hUp,30);
 document.addEventListener('mousemove',e=>{
-    let r=document.getElementById('hockey-canvas').getBoundingClientRect();
+    let c=document.getElementById('hockey-canvas');
+    if(!c)return;
+    let r=c.getBoundingClientRect();
     p1.y=Math.max(0,Math.min(e.clientY-r.top-20,160));
     p2.y+=(ball.y-p2.y-p2.h/2)*0.08;
-});hUp();
+});
+hUp();
 
-// ===== CARROM - REAL RULES =====
-let carromMode='',carP1=0,carP2=0,carTurn=1,carQueen=0,carPieces=[];
+// ===== CARROM =====
+let carromMode='',carP1=0,carP2=0,carTurn=1,carQueen=1,carPieces=[];
 function startCarrom(mode){
     carromMode=mode;
     carP1=0;carP2=0;carTurn=1;carQueen=1;
@@ -562,54 +596,47 @@ function resetCarrom(){
     document.getElementById('carrom-game').classList.add('hidden');
 }
 
-// ===== LUDO - PROPER BOARD =====
-let ludoMode='',ludoP1Pos=[0,0,0,0],ludoP2Pos=[0,0,0,0],ludoTurn=1,ludoLastRoll=0;
+// ===== LUDO =====
+let ludoMode='',ludoP1=0,ludoP2=0,ludoTurn=1,ludoLastRoll=0;
 function startLudo(mode){
     ludoMode=mode;
-    ludoP1Pos=[0,0,0,0];ludoP2Pos=[0,0,0,0];ludoTurn=1;ludoLastRoll=0;
+    ludoP1=0;ludoP2=0;ludoTurn=1;ludoLastRoll=0;
     document.getElementById('ludo-mode-select').classList.add('hidden');
     document.getElementById('ludo-game').classList.remove('hidden');
-    drawLudoBoard();
-}
-function drawLudoBoard(){
-    let html='';
-    for(let i=0;i<52;i++){
-        let cls='ludo-cell';
-        if([8,17,26,35,44].includes(i))cls+=' safe';
-        if(i===0||i===13||i===26||i===39)cls+=' home';
-        html+=`<div class="${cls}">${i}</div>`;
-    }
-    document.getElementById('ludo-board').innerHTML=html;
+    document.getElementById('ludo-p1').innerText='0';
+    document.getElementById('ludo-p2').innerText='0';
 }
 function ludoRoll(){
     let r=Math.floor(Math.random()*6)+1;
     ludoLastRoll=r;
     document.getElementById('ludo-dice').innerText='Dice: '+r+' | Last Roll: '+ludoLastRoll;
     if(ludoTurn===1){
-        ludoP1Pos[0]=Math.min(ludoP1Pos[0]+r,52);
+        ludoP1=Math.min(ludoP1+r,100);
         ludoTurn=2;
     }else{
-        ludoP2Pos[0]=Math.min(ludoP2Pos[0]+r,52);
+        ludoP2=Math.min(ludoP2+r,100);
         ludoTurn=1;
     }
-    document.getElementById('ludo-p1').innerText=ludoP1Pos[0]+'/52';
-    document.getElementById('ludo-p2').innerText=ludoP2Pos[0]+'/52';
+    document.getElementById('ludo-p1').innerText=ludoP1;
+    document.getElementById('ludo-p2').innerText=ludoP2;
     document.getElementById('ludo-turn').innerText='Player '+ludoTurn+' Turn';
-    if(ludoP1Pos[0]===52)alert('🎉 Player 1 WINS!');
-    if(ludoP2Pos[0]===52)alert('🎉 Player 2 WINS!');
+    if(ludoP1===100)alert('🎉 Player 1 WINS!');
+    if(ludoP2===100)alert('🎉 Player 2 WINS!');
 }
 function resetLudo(){
     document.getElementById('ludo-mode-select').classList.remove('hidden');
     document.getElementById('ludo-game').classList.add('hidden');
 }
 
-// ===== QUIZ - HARD =====
-let quizQs=[{q:'√144=?',a:12},{q:'15²=?',a:225},{q:'log₁₀(100)=?',a:2},{q:'2⁸=?',a:256},{q:'∫₀¹x²dx=?',a:0.33}];
+// ===== QUIZ =====
+let quizQs=[{q:'√144=?',a:12},{q:'15²=?',a:225},{q:'2⁸=?',a:256},{q:'10³=?',a:1000},{q:'√256=?',a:16}];
 let quizI=0,quizS=0;
 function showQuiz(){
     if(quizI<quizQs.length){
         let q=quizQs[quizI];
-        let o=[Math.abs(q.a-10),q.a,Math.abs(q.a+20)].sort(()=>Math.random()-0.5);
+        let wrong1=q.a-50;
+        let wrong2=q.a+100;
+        let o=[wrong1,q.a,wrong2].sort(()=>Math.random()-0.5);
         let h=`<p style="font-size:20px">${q.q}</p>`;
         o.forEach(opt=>h+=`<button onclick="answerQuiz(${opt},${q.a})">${opt}</button>`);
         document.getElementById('quiz-display').innerHTML=h;
@@ -634,7 +661,7 @@ let pieces={
     'a8':'♜','b8':'♞','c8':'♝','d8':'♛','e8':'♚','f8':'♝','g8':'♞','h8':'♜',
     'a7':'♟','b7':'♟','c7':'♟','d7':'♟','e7':'♟','f7':'♟','g7':'♟','h7':'♟',
     'a1':'♖','b1':'♘','c1':'♗','d1':'♕','e1':'♔','f1':'♗','g1':'♘','h1':'♖',
-    'a2':'♙','b2':'��','c2':'♙','d2':'♙','e2':'♙','f2':'♙','g2':'♙','h2':'♙'
+    'a2':'♙','b2':'♙','c2':'♙','d2':'♙','e2':'♙','f2':'♙','g2':'♙','h2':'♙'
 };
 function drawChess(){
     let html='';
@@ -652,7 +679,7 @@ function drawChess(){
 }
 drawChess();
 
-// ===== 2048 - HARDER =====
+// ===== 2048 =====
 let g2048=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],s2048=0;
 function add2048(){
     let e=[];
@@ -666,7 +693,8 @@ function draw2048(){
     let h='';
     for(let i=0;i<4;i++)for(let j=0;j<4;j++){
         let v=g2048[i][j];
-        h+=`<div style="width:60px;height:60px;background:${v===0?'#333':v<=2?'#eee4da':v<=4?'#ede0c8':v<=8?'#f2b179':v<=16?'#f59563':'#f65e3b'};display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;margin:3px;border-radius:3px">${v||''}</div>`;
+        let bg=v===0?'#333':v<=4?'#eee4da':v<=8?'#f2b179':v<=16?'#f59563':'#f65e3b';
+        h+=`<div style="width:60px;height:60px;background:${bg};display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;margin:3px;border-radius:3px">${v||''}</div>`;
     }
     document.getElementById('game2048').innerHTML=h;
     document.getElementById('2048-score').innerText=s2048;
