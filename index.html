@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12-Game Collection</title>
+    <title>12 Games in One</title>
     <style>
         body {
             background-color: black;
@@ -12,63 +12,137 @@
         }
         .tabs {
             display: flex;
-            justify-content: space-around;
-            margin: 20px;
+            border-bottom: 2px solid white;
         }
         .tab {
             padding: 10px;
-            border: 1px solid white;
             cursor: pointer;
-            background-color: transparent;
+            border: 1px solid white;
+            margin-right: 5px;
+            background-color: black;
         }
-        .active {
+        .tab:hover {
             background-color: white;
             color: black;
+        }
+        .game {
+            display: none;
+        }
+        .active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to the 12-Game Collection</h1>
+    <h1>Welcome to 12 Games</h1>
     <div class="tabs">
-        <div class="tab active" onclick="showGame('game1')">Game 1</div>
-        <div class="tab" onclick="showGame('game2')">Game 2</div>
-        <div class="tab" onclick="showGame('game3')">Game 3</div>
-        <div class="tab" onclick="showGame('game4')">Game 4</div>
-        <div class="tab" onclick="showGame('game5')">Game 5</div>
-        <div class="tab" onclick="showGame('game6')">Game 6</div>
-        <div class="tab" onclick="showGame('game7')">Game 7</div>
-        <div class="tab" onclick="showGame('game8')">Game 8</div>
-        <div class="tab" onclick="showGame('game9')">Game 9</div>
-        <div class="tab" onclick="showGame('game10')">Game 10</div>
-        <div class="tab" onclick="showGame('game11')">Game 11</div>
-        <div class="tab" onclick="showGame('game12')">Game 12</div>
+        <div class="tab" onclick="showGame('ticTacToe')">Tic Tac Toe</div>
+        <div class="tab" onclick="showGame('rockPaperScissors')">Rock Paper Scissors</div>
+        <div class="tab" onclick="showGame('connect4')">Connect 4</div>
+        <div class="tab" onclick="showGame('mathsQuiz')">Maths Quiz</div>
+        <div class="tab" onclick="showGame('hangman')">Hangman</div>
+        <div class="tab" onclick="showGame('snake')">Snake</div>
+        <div class="tab" onclick="showGame('airHockey')">Air Hockey</div>
+        <div class="tab" onclick="showGame('carrom')">Carrom</div>
+        <div class="tab" onclick="showGame('ludo')">Ludo</div>
+        <div class="tab" onclick="showGame('sudoku')">Sudoku</div>
+        <div class="tab" onclick="showGame('chess')">Chess</div>
+        <div class="tab" onclick="showGame('2048')">2048</div>
     </div>
-    <div id="gameDisplay">
-        <div id="game1">Content for Game 1</div>
-        <div id="game2" style="display:none;">Content for Game 2</div>
-        <div id="game3" style="display:none;">Content for Game 3</div>
-        <div id="game4" style="display:none;">Content for Game 4</div>
-        <div id="game5" style="display:none;">Content for Game 5</div>
-        <div id="game6" style="display:none;">Content for Game 6</div>
-        <div id="game7" style="display:none;">Content for Game 7</div>
-        <div id="game8" style="display:none;">Content for Game 8</div>
-        <div id="game9" style="display:none;">Content for Game 9</div>
-        <div id="game10" style="display:none;">Content for Game 10</div>
-        <div id="game11" style="display:none;">Content for Game 11</div>
-        <div id="game12" style="display:none;">Content for Game 12</div>
+    <div id="games">
+        <div id="ticTacToe" class="game active">
+            <h2>Tic Tac Toe</h2>
+            <script>
+            // Tic Tac Toe Game Code
+            </script>
+            <p><!-- Tic Tac Toe game implementation here --></p>
+        </div>
+        <div id="rockPaperScissors" class="game">
+            <h2>Rock Paper Scissors</h2>
+            <script>
+            // Rock Paper Scissors Game Code
+            </script>
+            <p><!-- Rock Paper Scissors game implementation here --></p>
+        </div>
+        <div id="connect4" class="game">
+            <h2>Connect 4</h2>
+            <script>
+            // Connect 4 Game Code
+            </script>
+            <p><!-- Connect 4 game implementation here --></p>
+        </div>
+        <div id="mathsQuiz" class="game">
+            <h2>Maths Quiz</h2>
+            <script>
+            // Maths Quiz Game Code
+            </script>
+            <p><!-- Maths Quiz implementation here --></p>
+        </div>
+        <div id="hangman" class="game">
+            <h2>Hangman</h2>
+            <script>
+            // Hangman Game Code
+            </script>
+            <p><!-- Hangman game implementation here --></p>
+        </div>
+        <div id="snake" class="game">
+            <h2>Snake</h2>
+            <script>
+            // Snake Game Code
+            </script>
+            <p><!-- Snake game implementation here --></p>
+        </div>
+        <div id="airHockey" class="game">
+            <h2>Air Hockey</h2>
+            <script>
+            // Air Hockey Game Code
+            </script>
+            <p><!-- Air Hockey implementation here --></p>
+        </div>
+        <div id="carrom" class="game">
+            <h2>Carrom</h2>
+            <script>
+            // Carrom Game Code
+            </script>
+            <p><!-- Carrom game implementation here --></p>
+        </div>
+        <div id="ludo" class="game">
+            <h2>Ludo</h2>
+            <script>
+            // Ludo Game Code
+            </script>
+            <p><!-- Ludo game implementation here --></p>
+        </div>
+        <div id="sudoku" class="game">
+            <h2>Sudoku</h2>
+            <script>
+            // Sudoku Game Code
+            </script>
+            <p><!-- Sudoku game implementation here --></p>
+        </div>
+        <div id="chess" class="game">
+            <h2>Chess</h2>
+            <script>
+            // Chess Game Code
+            </script>
+            <p><!-- Chess game implementation here --></p>
+        </div>
+        <div id="2048" class="game">
+            <h2>2048</h2>
+            <script>
+            // 2048 Game Code
+            </script>
+            <p><!-- 2048 game implementation here --></p>
+        </div>
     </div>
+
     <script>
         function showGame(gameId) {
-            const games = document.querySelectorAll('#gameDisplay > div');
-            games.forEach(game => {
-                game.style.display = 'none';
+            const games = document.querySelectorAll('.game');
+            games.forEach((game) => {
+                game.classList.remove('active');
             });
-            document.getElementById(gameId).style.display = 'block';
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
+            document.getElementById(gameId).classList.add('active');
         }
     </script>
 </body>
