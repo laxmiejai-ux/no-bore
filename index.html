@@ -1,15 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Two Player Games Hub</title>
+  <meta charset="UTF-8" />
+  <title>🎮 Two Player Games Hub</title>
   <style>
     body { background: black; color: white; font-family: Arial; text-align: center; }
-    .menu { margin: 20px; }
+    h1 { margin: 20px; }
+    .menu button, .mode-buttons button {
+      margin: 10px; padding: 10px 20px;
+      background: #444; color: white; border: none; border-radius: 5px;
+      cursor: pointer;
+    }
     .board { display: grid; margin: 20px auto; }
     .cell { border: 2px solid #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 2em; }
     .blue { color: blue; }
     .red { color: red; }
-    canvas { background: #111; display: block; margin: 20px auto; }
+    canvas { background: #111; margin: 20px auto; display: block; }
   </style>
 </head>
 <body>
@@ -21,11 +27,11 @@
     <button onclick="startGame('carrom')">Carrom</button>
     <button onclick="startGame('cornhole')">Cornhole</button>
   </div>
-  <div>
+  <div class="mode-buttons">
     <button onclick="setMode('friend')">Play with Friend</button>
     <button onclick="setMode('bot')">Play with Bot</button>
   </div>
-  <p id="status"></p>
+  <p id="status">Select a game to play!</p>
   <div id="gameArea"></div>
 
   <!-- External libraries -->
@@ -35,7 +41,7 @@
 
   <script>
     let mode = "friend";
-    let currentPlayer = "blue"; 
+    let currentPlayer = "blue";
     let gameOver = false;
     let board = [];
     let activeGame = "";
@@ -49,6 +55,7 @@
       activeGame = game;
       gameOver = false;
       currentPlayer = "blue";
+      document.getElementById("gameArea").innerHTML = "";
       if (game === "tictactoe") initTicTacToe();
       if (game === "connectfour") initConnectFour();
       if (game === "chess") initChess();
@@ -60,11 +67,10 @@
     function initTicTacToe() {
       board = Array(9).fill("");
       const area = document.getElementById("gameArea");
-      area.innerHTML = "";
       const grid = document.createElement("div");
       grid.className = "board";
       grid.style.gridTemplateColumns = "repeat(3,100px)";
-      board.forEach((cell, i) => {
+      board.forEach((_, i) => {
         const div = document.createElement("div");
         div.className = "cell";
         div.style.width = "100px"; div.style.height = "100px";
@@ -74,66 +80,98 @@
       area.appendChild(grid);
       document.getElementById("status").innerText = "Tic Tac Toe: Blue starts";
     }
-    // (same Tic Tac Toe logic as before...)
+    function makeMoveTicTacToe(i) {
+      if (board[i] !== "" || gameOver) return;
+      board[i] = currentPlayer;
+      renderTicTacToe();
+      if (checkWinnerTicTacToe()) return;
+      currentPlayer = currentPlayer === "blue" ? "red" : "blue";
+      document.getElementById("status").innerText = currentPlayer + "'s turn";
+      if (mode === "bot" && currentPlayer === "red") botMoveTicTacToe();
+    }
+    function renderTicTacToe() {
+      const cells = document.querySelectorAll(".cell");
+      board.forEach((val, i) => {
+        cells[i].innerText = val === "" ? "" : (val === "blue" ? "X" : "O");
+        cells[i].className = "cell " + val;
+      });
+    }
+    function botMoveTicTacToe() {
+      let empty = board.map((c,i)=>c===""?i:null).filter(i=>i!==null);
+      let choice = empty[Math.floor(Math.random()*empty.length)];
+      makeMoveTicTacToe(choice);
+    }
+    function checkWinnerTicTacToe() {
+      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      for (let [a,b,c] of wins) {
+        if (board[a] && board[a]===board[b] && board[a]===board[c]) {
+          document.getElementById("status").innerText = board[a]+" wins!";
+          gameOver = true; return true;
+        }
+      }
+      if (!board.includes("")) {
+        document.getElementById("status").innerText = "Draw!";
+        gameOver = true; return true;
+      }
+      return false;
+    }
 
     // ------------------ CONNECT FOUR ------------------
-    // (same Connect Four logic as before...)
-
-    // ------------------ CHESS ------------------
-    let chess, chessboard;
-    function initChess() {
+    let rows=6, cols=7;
+    function initConnectFour() {
+      board = Array(rows).fill().map(()=>Array(cols).fill(""));
       const area = document.getElementById("gameArea");
-      area.innerHTML = "<div id='chessboard' style='width:400px;margin:auto;'></div>";
-      chess = new Chess();
-      chessboard = Chessboard('chessboard', {
-        draggable: true,
-        position: 'start',
-        onDrop: handleChessMove
-      });
-      document.getElementById("status").innerText = "Chess: White starts";
+      const grid = document.createElement("div");
+      grid.className = "board";
+      grid.style.gridTemplateColumns = "repeat(7,60px)";
+      for (let r=0;r<rows;r++) {
+        for (let c=0;c<cols;c++) {
+          const div = document.createElement("div");
+          div.className = "cell";
+          div.style.width="60px"; div.style.height="60px";
+          div.onclick = () => makeMoveConnectFour(c);
+          grid.appendChild(div);
+        }
+      }
+      area.appendChild(grid);
+      document.getElementById("status").innerText = "Connect Four: Blue starts";
+      renderConnectFour();
     }
-    function handleChessMove(source, target) {
-      let move = chess.move({ from: source, to: target, promotion: 'q' });
-      if (move === null) return 'snapback';
-      document.getElementById("status").innerText = chess.turn()==='w' ? "White's turn" : "Black's turn";
-      if (chess.game_over()) {
-        document.getElementById("status").innerText = "Game Over!";
+    function makeMoveConnectFour(col) {
+      if (gameOver) return;
+      for (let r=rows-1;r>=0;r--) {
+        if (board[r][col]==="") {
+          board[r][col]=currentPlayer;
+          renderConnectFour();
+          if (checkWinnerConnectFour()) return;
+          currentPlayer = currentPlayer==="blue"?"red":"blue";
+          document.getElementById("status").innerText = currentPlayer+"'s turn";
+          if (mode==="bot" && currentPlayer==="red") botMoveConnectFour();
+          return;
+        }
       }
     }
-
-    // ------------------ CARROM ------------------
-    function initCarrom() {
-      const area = document.getElementById("gameArea");
-      area.innerHTML = "<canvas id='carromCanvas' width='600' height='600'></canvas>";
-      const canvas = document.getElementById("carromCanvas");
-      const engine = Matter.Engine.create();
-      const render = Matter.Render.create({
-        canvas: canvas,
-        engine: engine,
-        options: { width: 600, height: 600, wireframes: false, background: '#000' }
-      });
-      // Add striker + coins + pockets here
-      Matter.Engine.run(engine);
-      Matter.Render.run(render);
-      document.getElementById("status").innerText = "Carrom: Blue striker starts";
+    function renderConnectFour() {
+      const cells = document.querySelectorAll(".cell");
+      let idx=0;
+      for (let r=0;r<rows;r++) {
+        for (let c=0;c<cols;c++) {
+          cells[idx].innerText = board[r][c]===""?"":(board[r][c]==="blue"?"●":"●");
+          cells[idx].className = "cell "+board[r][c];
+          idx++;
+        }
+      }
     }
-
-    // ------------------ CORNHOLE ------------------
-    function initCornhole() {
-      const area = document.getElementById("gameArea");
-      area.innerHTML = "<canvas id='cornholeCanvas' width='800' height='400'></canvas>";
-      const canvas = document.getElementById("cornholeCanvas");
-      const engine = Matter.Engine.create();
-      const render = Matter.Render.create({
-        canvas: canvas,
-        engine: engine,
-        options: { width: 800, height: 400, wireframes: false, background: '#000' }
-      });
-      // Add boards + beanbags + physics here
-      Matter.Engine.run(engine);
-      Matter.Render.run(render);
-      document.getElementById("status").innerText = "Cornhole: Blue throws first";
+    function botMoveConnectFour() {
+      let choice = Math.floor(Math.random()*cols);
+      makeMoveConnectFour(choice);
     }
-  </script>
-</body>
-</html>
+    function checkWinnerConnectFour() {
+      for (let r=0;r<rows;r++) {
+        for (let c=0;c<cols;c++) {
+          let player=board[r][c];
+          if (!player) continue;
+          if (c+3<cols && player===board[r][c+1] && player===board[r][c+2] && player===board[r][c+3]) return declareWinner(player);
+          if (r+3<rows && player===board[r+1][c] && player===board[r+2][c] && player===board[r+3][c]) return declareWinner(player);
+          if (r+3<rows && c+3<cols && player===board[r+1][c+1] && player===board[r+2][c+2] && player===board[r+3][c+3]) return declareWinner(player);
+          if (r-3>=0 && c+3<cols && player===board[r-1][c+1] && player===board[r-2][c+2] && player===board[r-3][c+3]) return declareWinner(player
