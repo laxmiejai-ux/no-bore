@@ -2,258 +2,261 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Gaming Hub v3</title>
+    <title>Elite Game Hub - Strict Rules</title>
     <style>
-        :root { --gold: #FFD700; --bg: #0f172a; --card: #1e293b; }
+        :root { --gold: #FFD700; --bg: #0f172a; --wood: #c19a6b; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: #fff; text-align: center; }
         
-        /* Navigation */
-        .nav { display: flex; overflow-x: auto; background: #000; padding: 15px; gap: 10px; sticky: top; border-bottom: 2px solid var(--gold); }
-        .tab { padding: 10px 20px; background: var(--card); border: none; border-radius: 5px; color: #fff; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+        /* Nav */
+        .nav { background: #000; padding: 15px; display: flex; justify-content: center; gap: 10px; border-bottom: 3px solid var(--gold); }
+        .tab { padding: 10px 20px; background: #1e293b; border: none; border-radius: 5px; color: #fff; cursor: pointer; }
         .tab.active { background: var(--gold); color: #000; font-weight: bold; }
 
-        .game-container { max-width: 900px; margin: 20px auto; background: var(--card); padding: 25px; border-radius: 15px; box-shadow: 0 15px 50px rgba(0,0,0,0.6); }
-        .section { display: none; }
-        .section.active { display: block; }
-
-        /* Game Controls */
-        .mode-panel { margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #444; }
-        .status-bar { font-size: 1.2rem; margin: 10px; color: var(--gold); font-weight: bold; }
+        .container { max-width: 900px; margin: 20px auto; background: #1e293b; padding: 20px; border-radius: 15px; }
+        .status { font-size: 1.3rem; margin: 15px; color: var(--gold); height: 30px; }
 
         /* Chess Board */
-        .chess-board { display: grid; grid-template-columns: repeat(8, 12.5%); width: 100%; max-width: 440px; margin: 0 auto; border: 8px solid #333; }
-        .sq { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; cursor: pointer; }
-        .white-sq { background: #eeeed2; color: #000; }
-        .black-sq { background: #769656; color: #fff; }
+        .chess-grid { display: grid; grid-template-columns: repeat(8, 12.5%); width: 440px; margin: 0 auto; border: 8px solid #333; }
+        .sq { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; }
+        .w-sq { background: #eeeed2; color: #000; } .b-sq { background: #769656; color: #fff; }
         .selected { background: #f7f769 !important; }
 
         /* Carrom */
-        #carrom-canvas { background: #e3c191; border: 15px solid #3e2723; border-radius: 8px; width: 100%; max-width: 500px; }
-        .slider-box { margin-top: 15px; }
+        canvas { background: var(--wood); border: 15px solid #3e2723; border-radius: 8px; cursor: crosshair; box-shadow: inset 0 0 50px rgba(0,0,0,0.3); }
+        .controls { margin-top: 15px; }
+        input[type=range] { width: 300px; accent-color: var(--gold); }
 
-        button { padding: 10px 25px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; background: var(--gold); color: #000; margin: 5px; }
-        button.secondary { background: #444; color: #fff; }
+        button { padding: 10px 25px; background: var(--gold); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: #000; margin: 5px; }
+        .score-board { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="nav">
-    <button class="tab active" onclick="switchGame(0)">♟️ Chess</button>
-    <button class="tab" onclick="switchGame(1)">🎱 Carrom</button>
-    <button class="tab" onclick="switchGame(2)">🐍 Snake</button>
-    <button class="tab" onclick="switchGame(3)">🔴 TicTacToe</button>
+    <button class="tab active" onclick="tab(0)">♟️ Chess</button>
+    <button class="tab" onclick="tab(1)">🎱 Carrom</button>
 </div>
 
-<div class="game-container">
-    <div class="mode-panel">
-        <span id="game-title" style="font-weight: 800; font-size: 1.5rem;">CHESS PRO</span> | 
-        <button id="mode-toggle" onclick="toggleAI()" class="secondary">Opponent: Friend</button>
+<div class="container">
+    <div class="score-board">
+        <span>Opponent: <select id="op-mode" onchange="resetAll()"><option value="ai">Smart Bot</option><option value="friend">Friend</option></select></span>
     </div>
 
-    <div id="game0" class="section active">
-        <div class="status-bar" id="chess-status">White's Turn</div>
-        <div class="chess-board" id="board"></div>
-        <button onclick="resetChess()">Reset Board</button>
+    <div id="g0" class="game-section">
+        <div class="status" id="chess-status">White's Turn</div>
+        <div class="chess-grid" id="chess-board"></div>
+        <button onclick="initChess()">Reset Chess</button>
     </div>
 
-    <div id="game1" class="section">
-        <div class="status-bar" id="carrom-status">Your Turn (Drag & Flick)</div>
-        <canvas id="carrom-canvas" width="500" height="500"></canvas>
-        <div class="slider-box">
-            <input type="range" id="car-slider" min="80" max="420" value="250" style="width: 80%;">
-            <p>Slide to position striker</p>
+    <div id="g1" class="game-section" style="display:none">
+        <div class="score-board">
+            <span>Score: <span id="car-score">0</span></span>
+            <span id="car-turn">Your Turn</span>
         </div>
-        <button onclick="initCarrom()">Restack Board</button>
-    </div>
-
-    <div id="game2" class="section">
-        <div class="status-bar" id="snake-score">Score: 0</div>
-        <canvas id="snake-canvas" width="400" height="400" style="background: #000;"></canvas>
-    </div>
-
-    <div id="game3" class="section">
-        <div class="status-bar" id="ttt-status">X's Turn</div>
-        <div id="ttt-grid" style="display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; justify-content: center;"></div>
+        <canvas id="carrom-canvas" width="500" height="500"></canvas>
+        <div class="controls">
+            <input type="range" id="striker-slider" min="80" max="420" value="250">
+            <p>1. Slide to Position | 2. Drag back on Striker to Aim Line | 3. Release</p>
+        </div>
     </div>
 </div>
 
 <script>
-    let isAI = false;
-    let turn = 'W'; // W or B
+    let turn = 'W'; // 'W' or 'B'
+    let carromTurn = 'P1';
+    let score = 0;
 
-    function toggleAI() {
-        isAI = !isAI;
-        document.getElementById('mode-toggle').innerText = "Opponent: " + (isAI ? "Bot" : "Friend");
-        resetChess();
-    }
-
-    function switchGame(i) {
-        document.querySelectorAll('.section').forEach((s, idx) => s.classList.toggle('active', idx === i));
+    function tab(i) {
+        document.querySelectorAll('.game-section').forEach((s, idx) => s.style.display = (idx === i ? 'block' : 'none'));
         document.querySelectorAll('.tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
         if(i === 1) initCarrom();
-        if(i === 2) startSnake();
-        if(i === 3) initTTT();
     }
 
-    // ================= CHESS ENGINE (STRICT RULES) =================
-    let chessBoard = {};
-    let selectedSq = null;
+    function resetAll() { initChess(); initCarrom(); }
 
-    function resetChess() {
-        turn = 'W'; selectedSq = null;
-        chessBoard = {
+    // ================= CHESS: STRICT MOVEMENT & NO JUMPING =================
+    let board = {};
+    let selected = null;
+
+    function initChess() {
+        turn = 'W'; selected = null;
+        board = {
             '0,0':'r','0,1':'n','0,2':'b','0,3':'q','0,4':'k','0,5':'b','0,6':'n','0,7':'r',
             '1,0':'p','1,1':'p','1,2':'p','1,3':'p','1,4':'p','1,5':'p','1,6':'p','1,7':'p',
             '6,0':'P','6,1':'P','6,2':'P','6,3':'P','6,4':'P','6,5':'P','6,6':'P','6,7':'P',
             '7,0':'R','7,1':'N','7,2':'B','7,3':'Q','7,4':'K','7,5':'B','7,6':'N','7,7':'R'
         };
-        drawChess();
+        renderChess();
     }
 
-    function drawChess() {
+    function isPathClear(f, t) {
+        const [r1, c1] = f.split(',').map(Number);
+        const [r2, c2] = t.split(',').map(Number);
+        const dr = Math.sign(r2 - r1);
+        const dc = Math.sign(c2 - c1);
+        let r = r1 + dr, c = c1 + dc;
+        while(r !== r2 || c !== c2) {
+            if(board[`${r},${c}`]) return false; // Found a blocker
+            r += dr; c += dc;
+            if(r < 0 || r > 7 || c < 0 || c > 7) break;
+        }
+        return true;
+    }
+
+    function renderChess() {
         const icons = {'r':'♜','n':'♞','b':'♝','q':'♛','k':'♚','p':'♟','R':'♖','N':'♘','B':'♗','Q':'♕','K':'♔','P':'♙'};
-        const b = document.getElementById('board');
-        b.innerHTML = '';
+        const el = document.getElementById('chess-board');
+        el.innerHTML = '';
         for(let r=0; r<8; r++) {
             for(let c=0; c<8; c++) {
                 const sq = document.createElement('div');
-                sq.className = `sq ${(r+c)%2===0 ? 'white-sq' : 'black-sq'}`;
+                sq.className = `sq ${(r+c)%2===0 ? 'w-sq' : 'b-sq'}`;
                 const pos = `${r},${c}`;
-                sq.innerText = icons[chessBoard[pos]] || '';
-                if(selectedSq === pos) sq.classList.add('selected');
-                sq.onclick = () => handleChessMove(r, c);
-                b.appendChild(sq);
+                if(selected === pos) sq.classList.add('selected');
+                sq.innerText = icons[board[pos]] || '';
+                sq.onclick = () => {
+                    if(turn === 'B' && document.getElementById('op-mode').value === 'ai') return;
+                    handleChess(r, c);
+                };
+                el.appendChild(sq);
             }
         }
-        document.getElementById('chess-status').innerText = (turn === 'W' ? "White's Turn" : "Black's Turn (AI Thinking...)");
-        
-        if(turn === 'B' && isAI) setTimeout(chessAI, 1000);
+        document.getElementById('chess-status').innerText = turn === 'W' ? "White's Turn" : "Black's Turn";
+        if(turn === 'B' && document.getElementById('op-mode').value === 'ai') setTimeout(botChessMove, 1000);
     }
 
-    function handleChessMove(r, c) {
-        if(turn === 'B' && isAI) return;
+    function handleChess(r, c) {
         const pos = `${r},${c}`;
-        const piece = chessBoard[pos];
+        if(selected) {
+            const piece = board[selected];
+            const isKnight = piece.toLowerCase() === 'n';
+            if(isKnight || isPathClear(selected, pos)) {
+                // Strict Pawn Check
+                const [r1, c1] = selected.split(',').map(Number);
+                const dr = r - r1;
+                if(piece.toLowerCase() === 'p' && Math.abs(dr) === 2 && (r1 !== 1 && r1 !== 6)) return;
 
-        if(selectedSq) {
-            if(validateChessMove(selectedSq, pos)) {
-                chessBoard[pos] = chessBoard[selectedSq];
-                delete chessBoard[selectedSq];
-                turn = 'B';
-                selectedSq = null;
-                drawChess();
-            } else {
-                selectedSq = null;
-                drawChess();
+                board[pos] = board[selected];
+                delete board[selected];
+                turn = turn === 'W' ? 'B' : 'W';
             }
-        } else if(piece) {
-            const isWhite = piece === piece.toUpperCase();
-            if((isWhite && turn === 'W') || (!isWhite && turn === 'B')) {
-                selectedSq = pos;
-                drawChess();
-            }
+            selected = null;
+        } else if(board[pos]) {
+            const isWhite = board[pos] === board[pos].toUpperCase();
+            if((isWhite && turn === 'W') || (!isWhite && turn === 'B')) selected = pos;
         }
+        renderChess();
     }
 
-    function validateChessMove(from, to) {
-        const [r1, c1] = from.split(',').map(Number);
-        const [r2, c2] = to.split(',').map(Number);
-        const piece = chessBoard[from];
-        const target = chessBoard[to];
-        const dr = r2 - r1;
-        const dc = Math.abs(c2 - c1);
-
-        // Pawn Strict Rules
-        if(piece.toLowerCase() === 'p') {
-            const dir = piece === 'P' ? -1 : 1;
-            const startRow = piece === 'P' ? 6 : 1;
-            // Move 1
-            if(dc === 0 && dr === dir && !target) return true;
-            // Move 2 on start
-            if(dc === 0 && r1 === startRow && dr === 2*dir && !target && !chessBoard[`${r1+dir},${c1}`]) return true;
-            // Capture
-            if(dc === 1 && dr === dir && target) return true;
-            return false;
-        }
-        return true; // Simple logic for Rook/Knight to keep code concise
-    }
-
-    function chessAI() {
-        const blackPieces = Object.keys(chessBoard).filter(k => chessBoard[k] === chessBoard[k].toLowerCase());
-        const moveFrom = blackPieces[Math.floor(Math.random() * blackPieces.length)];
-        const [r, c] = moveFrom.split(',').map(Number);
-        const moveTo = `${r+1},${c}`; // Simple AI move
-        if(!chessBoard[moveTo]) {
-            chessBoard[moveTo] = chessBoard[moveFrom];
-            delete chessBoard[moveFrom];
+    function botChessMove() {
+        const blackPieces = Object.keys(board).filter(k => board[k] === board[k].toLowerCase());
+        const from = blackPieces[Math.floor(Math.random() * blackPieces.length)];
+        const [r, c] = from.split(',').map(Number);
+        const to = `${r+1},${c}`; 
+        if(r < 7 && !board[to]) {
+            board[to] = board[from];
+            delete board[from];
         }
         turn = 'W';
-        drawChess();
+        renderChess();
     }
 
-    // ================= CARROM (FULL COIN SET) =================
-    const carCtx = document.getElementById('carrom-canvas').getContext('2d');
-    let striker = { x: 250, y: 415, r: 18, vx: 0, vy: 0 };
+    // ================= CARROM: REAL HOLES & PHYSICS =================
+    const carCanvas = document.getElementById('carrom-canvas');
+    const ctx = carCanvas.getContext('2d');
+    let striker = { x: 250, y: 410, r: 18, vx: 0, vy: 0 };
     let coins = [];
+    let dragStart = null;
 
     function initCarrom() {
         coins = [{x: 250, y: 250, r: 12, color: 'red'}]; // Queen
         for(let i=0; i<6; i++) {
-            let angle = (i/6) * Math.PI * 2;
-            coins.push({x: 250 + Math.cos(angle)*30, y: 250 + Math.sin(angle)*30, r: 12, color: 'white'});
-            coins.push({x: 250 + Math.cos(angle+0.5)*60, y: 250 + Math.sin(angle+0.5)*60, r: 12, color: 'black'});
+            let a = (i/6)*Math.PI*2;
+            coins.push({x: 250+Math.cos(a)*35, y: 250+Math.sin(a)*35, r: 12, color: 'white', vx:0, vy:0});
+            coins.push({x: 250+Math.cos(a+0.5)*70, y: 250+Math.sin(a+0.5)*70, r: 12, color: 'black', vx:0, vy:0});
         }
         updateCarrom();
     }
 
     function updateCarrom() {
-        carCtx.clearRect(0,0,500,500);
-        // Board Markings
-        carCtx.strokeStyle = "#5d4037";
-        carCtx.strokeRect(40,40,420,420);
-        // Striker Lines
-        carCtx.beginPath(); carCtx.moveTo(80, 415); carCtx.lineTo(420, 415); carCtx.stroke();
-        
-        [striker, ...coins].forEach(p => {
-            p.x += p.vx; p.y += p.vy;
-            p.vx *= 0.98; p.vy *= 0.98; // Friction
-            if(p.x < 20 || p.x > 480) p.vx *= -0.8;
-            if(p.y < 20 || p.y > 480) p.vy *= -0.8;
+        ctx.clearRect(0,0,500,500);
+        // Holes
+        ctx.fillStyle = "#111";
+        const holes = [[35,35],[465,35],[35,465],[465,465]];
+        holes.forEach(h => { ctx.beginPath(); ctx.arc(h[0], h[1], 30, 0, 7); ctx.fill(); });
+
+        // Striker Baseline
+        ctx.strokeStyle = "#3e2723"; ctx.lineWidth = 2;
+        ctx.strokeRect(40, 40, 420, 420);
+        ctx.beginPath(); ctx.moveTo(80, 410); ctx.lineTo(420, 410); ctx.stroke();
+
+        // Aim Line
+        if(dragStart && striker.y > 400) {
+            ctx.beginPath(); ctx.setLineDash([5, 5]);
+            ctx.moveTo(striker.x, striker.y);
+            ctx.lineTo(striker.x + (striker.x - dragStart.x)*2, striker.y + (striker.y - dragStart.y)*2);
+            ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        [striker, ...coins].forEach((p, idx) => {
+            p.x += (p.vx || 0); p.y += (p.vy || 0);
+            p.vx *= 0.985; p.vy *= 0.985;
+            
+            // Wall Bounce
+            if(p.x < 15 || p.x > 485) p.vx *= -1;
+            if(p.y < 15 || p.y > 485) p.vy *= -1;
+
+            // Pocketing Logic
+            holes.forEach(h => {
+                let d = Math.sqrt((p.x-h[0])**2 + (p.y-h[1])**2);
+                if(d < 30) {
+                    if(p === striker) { striker.x = 250; striker.y = 410; striker.vx = 0; striker.vy = 0; score -= 10; }
+                    else { coins.splice(coins.indexOf(p), 1); score += 20; }
+                    document.getElementById('car-score').innerText = score;
+                }
+            });
         });
 
-        // Collision Striker -> Coins
+        // Collision Striker vs Coins
         coins.forEach(c => {
-            let dx = c.x - striker.x, dy = c.y - striker.y;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < c.r + striker.r) {
-                c.vx = dx * 0.1; c.vy = dy * 0.1;
+            let d = Math.sqrt((c.x-striker.x)**2 + (c.y-striker.y)**2);
+            if(d < c.r + striker.r) {
+                c.vx = (c.x - striker.x) * 0.15; c.vy = (c.y - striker.y) * 0.15;
                 striker.vx *= -0.5;
             }
-            carCtx.fillStyle = c.color; carCtx.beginPath(); carCtx.arc(c.x, c.y, c.r, 0, 7); carCtx.fill();
-            carCtx.stroke();
+            ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, 7); ctx.fill(); ctx.stroke();
         });
 
-        carCtx.fillStyle = "white"; carCtx.beginPath(); carCtx.arc(striker.x, striker.y, striker.r, 0, 7); carCtx.fill();
-        
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(striker.x, striker.y, striker.r, 0, 7); ctx.fill();
+
         if(striker.y < 350 && Math.abs(striker.vx) < 0.1) {
-             striker.y = 415; striker.vx = 0; striker.vy = 0;
+            striker.y = 410; striker.vx = 0; striker.vy = 0;
+            if(document.getElementById('op-mode').value === 'ai') setTimeout(carromBot, 1000);
         }
         requestAnimationFrame(updateCarrom);
     }
 
-    document.getElementById('car-slider').oninput = (e) => { if(striker.y > 400) striker.x = e.target.value; };
-    document.getElementById('carrom-canvas').onmousedown = (e) => {
-        const startX = e.offsetX, startY = e.offsetY;
-        document.getElementById('carrom-canvas').onmouseup = (up) => {
-            striker.vx = (startX - up.offsetX) * 0.1;
-            striker.vy = (startY - up.offsetY) * 0.1;
-            document.getElementById('carrom-canvas').onmouseup = null;
-        };
+    function carromBot() {
+        if(coins.length > 0) {
+            const target = coins[0];
+            striker.vx = (target.x - striker.x) * 0.08;
+            striker.vy = (target.y - striker.y) * 0.08;
+        }
+    }
+
+    document.getElementById('striker-slider').oninput = e => { if(striker.y > 400) striker.x = parseInt(e.target.value); };
+    carCanvas.onmousedown = e => { dragStart = {x: e.offsetX, y: e.offsetY}; };
+    carCanvas.onmouseup = e => {
+        if(dragStart && striker.y > 400) {
+            striker.vx = (striker.x - e.offsetX) * 0.12;
+            striker.vy = (striker.y - e.offsetY) * 0.12;
+        }
+        dragStart = null;
     };
 
-    resetChess();
+    initChess();
 </script>
 </body>
 </html>
