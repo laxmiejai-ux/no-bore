@@ -1,262 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Elite Game Hub - Strict Rules</title>
-    <style>
-        :root { --gold: #FFD700; --bg: #0f172a; --wood: #c19a6b; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: #fff; text-align: center; }
-        
-        /* Nav */
-        .nav { background: #000; padding: 15px; display: flex; justify-content: center; gap: 10px; border-bottom: 3px solid var(--gold); }
-        .tab { padding: 10px 20px; background: #1e293b; border: none; border-radius: 5px; color: #fff; cursor: pointer; }
-        .tab.active { background: var(--gold); color: #000; font-weight: bold; }
-
-        .container { max-width: 900px; margin: 20px auto; background: #1e293b; padding: 20px; border-radius: 15px; }
-        .status { font-size: 1.3rem; margin: 15px; color: var(--gold); height: 30px; }
-
-        /* Chess Board */
-        .chess-grid { display: grid; grid-template-columns: repeat(8, 12.5%); width: 440px; margin: 0 auto; border: 8px solid #333; }
-        .sq { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; }
-        .w-sq { background: #eeeed2; color: #000; } .b-sq { background: #769656; color: #fff; }
-        .selected { background: #f7f769 !important; }
-
-        /* Carrom */
-        canvas { background: var(--wood); border: 15px solid #3e2723; border-radius: 8px; cursor: crosshair; box-shadow: inset 0 0 50px rgba(0,0,0,0.3); }
-        .controls { margin-top: 15px; }
-        input[type=range] { width: 300px; accent-color: var(--gold); }
-
-        button { padding: 10px 25px; background: var(--gold); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: #000; margin: 5px; }
-        .score-board { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 10px; }
-    </style>
+  <title>Tic Tac Toe</title>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    .board { display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; margin: 20px auto; }
+    .cell { width: 100px; height: 100px; font-size: 2em; display: flex; align-items: center; justify-content: center; border: 2px solid #333; cursor: pointer; }
+  </style>
 </head>
 <body>
+  <h1>Tic Tac Toe</h1>
+  <button onclick="setMode('friend')">Play with Friend</button>
+  <button onclick="setMode('bot')">Play with Bot</button>
+  <div class="board" id="board"></div>
+  <p id="status"></p>
 
-<div class="nav">
-    <button class="tab active" onclick="tab(0)">♟️ Chess</button>
-    <button class="tab" onclick="tab(1)">🎱 Carrom</button>
-</div>
+  <script>
+    let board = ["","","","","","","","",""];
+    let currentPlayer = "X";
+    let mode = "friend";
+    let gameOver = false;
 
-<div class="container">
-    <div class="score-board">
-        <span>Opponent: <select id="op-mode" onchange="resetAll()"><option value="ai">Smart Bot</option><option value="friend">Friend</option></select></span>
-    </div>
-
-    <div id="g0" class="game-section">
-        <div class="status" id="chess-status">White's Turn</div>
-        <div class="chess-grid" id="chess-board"></div>
-        <button onclick="initChess()">Reset Chess</button>
-    </div>
-
-    <div id="g1" class="game-section" style="display:none">
-        <div class="score-board">
-            <span>Score: <span id="car-score">0</span></span>
-            <span id="car-turn">Your Turn</span>
-        </div>
-        <canvas id="carrom-canvas" width="500" height="500"></canvas>
-        <div class="controls">
-            <input type="range" id="striker-slider" min="80" max="420" value="250">
-            <p>1. Slide to Position | 2. Drag back on Striker to Aim Line | 3. Release</p>
-        </div>
-    </div>
-</div>
-
-<script>
-    let turn = 'W'; // 'W' or 'B'
-    let carromTurn = 'P1';
-    let score = 0;
-
-    function tab(i) {
-        document.querySelectorAll('.game-section').forEach((s, idx) => s.style.display = (idx === i ? 'block' : 'none'));
-        document.querySelectorAll('.tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
-        if(i === 1) initCarrom();
+    function setMode(m) {
+      mode = m;
+      resetGame();
     }
 
-    function resetAll() { initChess(); initCarrom(); }
-
-    // ================= CHESS: STRICT MOVEMENT & NO JUMPING =================
-    let board = {};
-    let selected = null;
-
-    function initChess() {
-        turn = 'W'; selected = null;
-        board = {
-            '0,0':'r','0,1':'n','0,2':'b','0,3':'q','0,4':'k','0,5':'b','0,6':'n','0,7':'r',
-            '1,0':'p','1,1':'p','1,2':'p','1,3':'p','1,4':'p','1,5':'p','1,6':'p','1,7':'p',
-            '6,0':'P','6,1':'P','6,2':'P','6,3':'P','6,4':'P','6,5':'P','6,6':'P','6,7':'P',
-            '7,0':'R','7,1':'N','7,2':'B','7,3':'Q','7,4':'K','7,5':'B','7,6':'N','7,7':'R'
-        };
-        renderChess();
+    function resetGame() {
+      board = ["","","","","","","","",""];
+      currentPlayer = "X";
+      gameOver = false;
+      document.getElementById("status").innerText = "Player X's turn";
+      renderBoard();
     }
 
-    function isPathClear(f, t) {
-        const [r1, c1] = f.split(',').map(Number);
-        const [r2, c2] = t.split(',').map(Number);
-        const dr = Math.sign(r2 - r1);
-        const dc = Math.sign(c2 - c1);
-        let r = r1 + dr, c = c1 + dc;
-        while(r !== r2 || c !== c2) {
-            if(board[`${r},${c}`]) return false; // Found a blocker
-            r += dr; c += dc;
-            if(r < 0 || r > 7 || c < 0 || c > 7) break;
-        }
-        return true;
+    function renderBoard() {
+      const boardDiv = document.getElementById("board");
+      boardDiv.innerHTML = "";
+      board.forEach((cell, i) => {
+        const div = document.createElement("div");
+        div.className = "cell";
+        div.innerText = cell;
+        div.onclick = () => makeMove(i);
+        boardDiv.appendChild(div);
+      });
     }
 
-    function renderChess() {
-        const icons = {'r':'♜','n':'♞','b':'♝','q':'♛','k':'♚','p':'♟','R':'♖','N':'♘','B':'♗','Q':'♕','K':'♔','P':'♙'};
-        const el = document.getElementById('chess-board');
-        el.innerHTML = '';
-        for(let r=0; r<8; r++) {
-            for(let c=0; c<8; c++) {
-                const sq = document.createElement('div');
-                sq.className = `sq ${(r+c)%2===0 ? 'w-sq' : 'b-sq'}`;
-                const pos = `${r},${c}`;
-                if(selected === pos) sq.classList.add('selected');
-                sq.innerText = icons[board[pos]] || '';
-                sq.onclick = () => {
-                    if(turn === 'B' && document.getElementById('op-mode').value === 'ai') return;
-                    handleChess(r, c);
-                };
-                el.appendChild(sq);
-            }
-        }
-        document.getElementById('chess-status').innerText = turn === 'W' ? "White's Turn" : "Black's Turn";
-        if(turn === 'B' && document.getElementById('op-mode').value === 'ai') setTimeout(botChessMove, 1000);
+    function makeMove(i) {
+      if (board[i] !== "" || gameOver) return;
+      board[i] = currentPlayer;
+      checkWinner();
+      if (!gameOver) {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        document.getElementById("status").innerText = `Player ${currentPlayer}'s turn`;
+        if (mode === "bot" && currentPlayer === "O") botMove();
+      }
+      renderBoard();
     }
 
-    function handleChess(r, c) {
-        const pos = `${r},${c}`;
-        if(selected) {
-            const piece = board[selected];
-            const isKnight = piece.toLowerCase() === 'n';
-            if(isKnight || isPathClear(selected, pos)) {
-                // Strict Pawn Check
-                const [r1, c1] = selected.split(',').map(Number);
-                const dr = r - r1;
-                if(piece.toLowerCase() === 'p' && Math.abs(dr) === 2 && (r1 !== 1 && r1 !== 6)) return;
-
-                board[pos] = board[selected];
-                delete board[selected];
-                turn = turn === 'W' ? 'B' : 'W';
-            }
-            selected = null;
-        } else if(board[pos]) {
-            const isWhite = board[pos] === board[pos].toUpperCase();
-            if((isWhite && turn === 'W') || (!isWhite && turn === 'B')) selected = pos;
-        }
-        renderChess();
+    function botMove() {
+      // Simple bot: pick random empty cell
+      let emptyCells = board.map((c, i) => c === "" ? i : null).filter(i => i !== null);
+      let choice = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      makeMove(choice);
     }
 
-    function botChessMove() {
-        const blackPieces = Object.keys(board).filter(k => board[k] === board[k].toLowerCase());
-        const from = blackPieces[Math.floor(Math.random() * blackPieces.length)];
-        const [r, c] = from.split(',').map(Number);
-        const to = `${r+1},${c}`; 
-        if(r < 7 && !board[to]) {
-            board[to] = board[from];
-            delete board[from];
+    function checkWinner() {
+      const wins = [
+        [0,1,2],[3,4,5],[6,7,8], // rows
+        [0,3,6],[1,4,7],[2,5,8], // cols
+        [0,4,8],[2,4,6]          // diagonals
+      ];
+      for (let combo of wins) {
+        const [a,b,c] = combo;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          document.getElementById("status").innerText = `Player ${board[a]} wins!`;
+          gameOver = true;
+          return;
         }
-        turn = 'W';
-        renderChess();
+      }
+      if (!board.includes("")) {
+        document.getElementById("status").innerText = "It's a draw!";
+        gameOver = true;
+      }
     }
 
-    // ================= CARROM: REAL HOLES & PHYSICS =================
-    const carCanvas = document.getElementById('carrom-canvas');
-    const ctx = carCanvas.getContext('2d');
-    let striker = { x: 250, y: 410, r: 18, vx: 0, vy: 0 };
-    let coins = [];
-    let dragStart = null;
-
-    function initCarrom() {
-        coins = [{x: 250, y: 250, r: 12, color: 'red'}]; // Queen
-        for(let i=0; i<6; i++) {
-            let a = (i/6)*Math.PI*2;
-            coins.push({x: 250+Math.cos(a)*35, y: 250+Math.sin(a)*35, r: 12, color: 'white', vx:0, vy:0});
-            coins.push({x: 250+Math.cos(a+0.5)*70, y: 250+Math.sin(a+0.5)*70, r: 12, color: 'black', vx:0, vy:0});
-        }
-        updateCarrom();
-    }
-
-    function updateCarrom() {
-        ctx.clearRect(0,0,500,500);
-        // Holes
-        ctx.fillStyle = "#111";
-        const holes = [[35,35],[465,35],[35,465],[465,465]];
-        holes.forEach(h => { ctx.beginPath(); ctx.arc(h[0], h[1], 30, 0, 7); ctx.fill(); });
-
-        // Striker Baseline
-        ctx.strokeStyle = "#3e2723"; ctx.lineWidth = 2;
-        ctx.strokeRect(40, 40, 420, 420);
-        ctx.beginPath(); ctx.moveTo(80, 410); ctx.lineTo(420, 410); ctx.stroke();
-
-        // Aim Line
-        if(dragStart && striker.y > 400) {
-            ctx.beginPath(); ctx.setLineDash([5, 5]);
-            ctx.moveTo(striker.x, striker.y);
-            ctx.lineTo(striker.x + (striker.x - dragStart.x)*2, striker.y + (striker.y - dragStart.y)*2);
-            ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.stroke();
-            ctx.setLineDash([]);
-        }
-
-        [striker, ...coins].forEach((p, idx) => {
-            p.x += (p.vx || 0); p.y += (p.vy || 0);
-            p.vx *= 0.985; p.vy *= 0.985;
-            
-            // Wall Bounce
-            if(p.x < 15 || p.x > 485) p.vx *= -1;
-            if(p.y < 15 || p.y > 485) p.vy *= -1;
-
-            // Pocketing Logic
-            holes.forEach(h => {
-                let d = Math.sqrt((p.x-h[0])**2 + (p.y-h[1])**2);
-                if(d < 30) {
-                    if(p === striker) { striker.x = 250; striker.y = 410; striker.vx = 0; striker.vy = 0; score -= 10; }
-                    else { coins.splice(coins.indexOf(p), 1); score += 20; }
-                    document.getElementById('car-score').innerText = score;
-                }
-            });
-        });
-
-        // Collision Striker vs Coins
-        coins.forEach(c => {
-            let d = Math.sqrt((c.x-striker.x)**2 + (c.y-striker.y)**2);
-            if(d < c.r + striker.r) {
-                c.vx = (c.x - striker.x) * 0.15; c.vy = (c.y - striker.y) * 0.15;
-                striker.vx *= -0.5;
-            }
-            ctx.fillStyle = c.color; ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, 7); ctx.fill(); ctx.stroke();
-        });
-
-        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(striker.x, striker.y, striker.r, 0, 7); ctx.fill();
-
-        if(striker.y < 350 && Math.abs(striker.vx) < 0.1) {
-            striker.y = 410; striker.vx = 0; striker.vy = 0;
-            if(document.getElementById('op-mode').value === 'ai') setTimeout(carromBot, 1000);
-        }
-        requestAnimationFrame(updateCarrom);
-    }
-
-    function carromBot() {
-        if(coins.length > 0) {
-            const target = coins[0];
-            striker.vx = (target.x - striker.x) * 0.08;
-            striker.vy = (target.y - striker.y) * 0.08;
-        }
-    }
-
-    document.getElementById('striker-slider').oninput = e => { if(striker.y > 400) striker.x = parseInt(e.target.value); };
-    carCanvas.onmousedown = e => { dragStart = {x: e.offsetX, y: e.offsetY}; };
-    carCanvas.onmouseup = e => {
-        if(dragStart && striker.y > 400) {
-            striker.vx = (striker.x - e.offsetX) * 0.12;
-            striker.vy = (striker.y - e.offsetY) * 0.12;
-        }
-        dragStart = null;
-    };
-
-    initChess();
-</script>
+    resetGame();
+  </script>
 </body>
 </html>
