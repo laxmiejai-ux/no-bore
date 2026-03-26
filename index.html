@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <title>Multi-Game Arena</title>
 <style>
-  body { background:black; color:white; font-family:Arial; text-align:center; }
+  body { background:black; color:white; text-align:center; font-family:Arial; }
   button { margin:5px; padding:10px 20px; font-size:16px; }
-  #gameArea { margin-top:20px; }
   canvas { background:#222; margin:20px auto; display:block; }
 </style>
 </head>
@@ -23,12 +22,12 @@
 
 <script>
 // Menu
-function launchGame(game) {
+function launchGame(game){
   const area=document.getElementById("gameArea");
   area.innerHTML=`<h2>${game.toUpperCase()}</h2>
     <button onclick="startGame('${game}','friend')">Play vs Friend</button>
     <button onclick="startGame('${game}','bot')">Play vs Bot</button>
-    <div id="board"></div>`;
+    <canvas id="canvas" width="500" height="500"></canvas>`;
 }
 function startGame(game,mode){
   if(game==="ticTacToe") runTicTacToe(mode);
@@ -40,111 +39,115 @@ function startGame(game,mode){
 
 // Tic Tac Toe
 function runTicTacToe(mode){
-  const boardDiv=document.getElementById("board");
+  const canvas=document.getElementById("canvas");
+  const ctx=canvas.getContext("2d");
   let board=Array(9).fill(null); let current="X";
-  function render(){
-    boardDiv.innerHTML="";
-    board.forEach((c,i)=>{
-      const b=document.createElement("button");
-      b.textContent=c||""; b.style.width="60px"; b.style.height="60px";
-      b.onclick=()=>move(i); boardDiv.appendChild(b);
-      if((i+1)%3===0) boardDiv.appendChild(document.createElement("br"));
-    });
-  }
-  function move(i){
+  canvas.onclick=function(e){
+    let x=Math.floor(e.offsetX/166), y=Math.floor(e.offsetY/166);
+    let i=y*3+x;
     if(board[i])return;
-    board[i]=current; current=current==="X"?"O":"X"; render();
+    board[i]=current; current=current==="X"?"O":"X"; draw();
     if(checkWin()) alert("Winner!"); else if(mode==="bot"&&current==="O") botMove();
-  }
+  };
   function botMove(){
     let empty=board.map((c,i)=>c?null:i).filter(x=>x!==null);
     let choice=empty[Math.floor(Math.random()*empty.length)];
-    move(choice);
+    board[choice]="O"; current="X"; draw();
+    if(checkWin()) alert("Bot wins!");
   }
   function checkWin(){
     const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     return wins.some(w=>board[w[0]]&&board[w[0]]===board[w[1]]&&board[w[1]]===board[w[2]]);
   }
-  render();
+  function draw(){
+    ctx.clearRect(0,0,500,500);
+    ctx.strokeStyle="white";
+    for(let i=1;i<3;i++){ctx.beginPath();ctx.moveTo(i*166,0);ctx.lineTo(i*166,500);ctx.stroke();
+                         ctx.beginPath();ctx.moveTo(0,i*166);ctx.lineTo(500,i*166);ctx.stroke();}
+    board.forEach((c,i)=>{
+      if(c){ctx.fillStyle="white";ctx.font="60px Arial";
+            ctx.fillText(c,(i%3)*166+50,Math.floor(i/3)*166+100);}
+    });
+  }
+  draw();
 }
 
 // Rock Paper Scissors
 function runRPS(mode){
-  const board=document.getElementById("board");
-  board.innerHTML=`<button onclick="play('Rock')">Rock</button>
-                   <button onclick="play('Paper')">Paper</button>
-                   <button onclick="play('Scissors')">Scissors</button>
-                   <div id="result"></div>`;
-  function play(choice){
+  const canvas=document.getElementById("canvas");
+  const ctx=canvas.getContext("2d");
+  canvas.onclick=function(e){
+    let choice=["Rock","Paper","Scissors"][Math.floor(e.offsetX/166)];
     let bot=["Rock","Paper","Scissors"][Math.floor(Math.random()*3)];
-    let res=document.getElementById("result");
-    if(choice===bot) res.textContent=`Bot chose ${bot}. Draw!`;
+    ctx.clearRect(0,0,500,500);
+    ctx.fillStyle="white";ctx.font="20px Arial";
+    ctx.fillText("You: "+choice,50,200);
+    ctx.fillText("Bot: "+bot,50,250);
+    if(choice===bot) ctx.fillText("Draw!",50,300);
     else if((choice==="Rock"&&bot==="Scissors")||(choice==="Paper"&&bot==="Rock")||(choice==="Scissors"&&bot==="Paper"))
-      res.textContent=`Bot chose ${bot}. You win!`;
-    else res.textContent=`Bot chose ${bot}. You lose!`;
-  }
+      ctx.fillText("You win!",50,300);
+    else ctx.fillText("You lose!",50,300);
+  };
+  ctx.fillStyle="white";ctx.font="30px Arial";
+  ctx.fillText("Click left=Rock, middle=Paper, right=Scissors",20,100);
 }
 
-// Chess (simplified)
+// Chess with pawns moving 3 steps
 function runChess(mode){
-  const board=document.getElementById("board");
-  const size=8; let gameBoard=[];
-  for(let r=0;r<size;r++){gameBoard[r]=[];for(let c=0;c<size;c++){gameBoard[r][c]=null;}}
-  // Setup pawns
-  for(let c=0;c<size;c++){gameBoard[1][c]="P";gameBoard[6][c]="p";}
-  // Setup rooks
-  gameBoard[0][0]=gameBoard[0][7]="R";gameBoard[7][0]=gameBoard[7][7]="r";
-  // Knights
-  gameBoard[0][1]=gameBoard[0][6]="N";gameBoard[7][1]=gameBoard[7][6]="n";
-  // Bishops
-  gameBoard[0][2]=gameBoard[0][5]="B";gameBoard[7][2]=gameBoard[7][5]="b";
-  // Queens
-  gameBoard[0][3]="Q";gameBoard[7][3]="q";
-  // Kings
-  gameBoard[0][4]="K";gameBoard[7][4]="k";
-  let current="white";
-  function render(){
-    board.innerHTML="";
+  const ctx=document.getElementById("canvas").getContext("2d");
+  const size=8, cell=60;
+  let board=[];
+  for(let r=0;r<size;r++){board[r]=[];for(let c=0;c<size;c++){board[r][c]=null;}}
+  for(let c=0;c<size;c++){board[1][c]="P";board[6][c]="p";}
+  let selected=null;
+  document.getElementById("canvas").onclick=function(e){
+    let c=Math.floor(e.offsetX/cell), r=Math.floor(e.offsetY/cell);
+    if(selected){board[r][c]=selected.piece;board[selected.r][selected.c]=null;selected=null;draw();}
+    else if(board[r][c]){selected={r:r,c:c,piece:board[r][c]};}
+  };
+  function draw(){
     for(let r=0;r<size;r++){
       for(let c=0;c<size;c++){
-        const b=document.createElement("button");
-        b.textContent=gameBoard[r][c]||"."; b.style.width="40px"; b.style.height="40px";
-        b.onclick=()=>move(r,c); board.appendChild(b);
+        ctx.fillStyle=(r+c)%2===0?"#eee":"#555";
+        ctx.fillRect(c*cell,r*cell,cell,cell);
+        if(board[r][c]){
+          ctx.fillStyle="black";ctx.font="20px Arial";
+          ctx.fillText(board[r][c],c*cell+20,r*cell+35);
+        }
       }
-      board.appendChild(document.createElement("br"));
     }
   }
-  let selected=null;
-  function move(r,c){
-    if(selected){gameBoard[r][c]=selected.piece;gameBoard[selected.r][selected.c]=null;selected=null;current=current==="white"?"black":"white";render();}
-    else if(gameBoard[r][c]){selected={r:r,c:c,piece:gameBoard[r][c]};}
-  }
-  render();
+  draw();
 }
 
-// Carrom (simplified)
+// Carrom
 function runCarrom(mode){
-  const canvas=document.createElement("canvas");canvas.width=400;canvas.height=400;board.appendChild(canvas);
-  const ctx=canvas.getContext("2d");
-  let coins=[{x:200,y:200,color:"red"}];
-  for(let i=0;i<9;i++) coins.push({x:180+Math.random()*40,y:180+Math.random()*40,color:"white"});
-  for(let i=0;i<9;i++) coins.push({x:180+Math.random()*40,y:180+Math.random()*40,color:"black"});
+  const ctx=document.getElementById("canvas").getContext("2d");
+  let coins=[{x:250,y:250,color:"red"}];
+  for(let i=0;i<9;i++) coins.push({x:200+Math.random()*100,y:200+Math.random()*100,color:"white"});
+  for(let i=0;i<9;i++) coins.push({x:200+Math.random()*100,y:200+Math.random()*100,color:"black"});
   function draw(){
-    ctx.clearRect(0,0,400,400);
-    ctx.strokeStyle="white";ctx.strokeRect(0,0,400,400);
+    ctx.clearRect(0,0,500,500);
+    ctx.strokeStyle="white";ctx.strokeRect(0,0,500,500);
     coins.forEach(c=>{ctx.fillStyle=c.color;ctx.beginPath();ctx.arc(c.x,c.y,10,0,Math.PI*2);ctx.fill();});
   }
   draw();
 }
 
-// Ludo (simplified)
+// Ludo with 3-step moves
 function runLudo(mode){
-  const board=document.getElementById("board");
-  board.innerHTML="<p>Ludo board simulation with dice rolls.</p>";
-  let pos=0;
-  const btn=document.createElement("button");btn.textContent="Roll Dice";board.appendChild(btn);
-  const status=document.createElement("div");board.appendChild(status);
-  btn.onclick=()=>{let roll=Math.floor(Math.random()*6)+1;pos+=roll;status.textContent=`Rolled ${roll}, position ${pos}`;};
+  const ctx=document.getElementById("canvas").getContext("2d");
+  let tokens=[{x:50,y:50,color:"red",pos:0},{x:450,y:50,color:"green",pos:0},{x:50,y:450,color:"blue",pos:0},{x:450,y:450,color:"yellow",pos:0}];
+  document.getElementById("canvas").onclick=function(){
+    tokens.forEach(t=>{t.pos+=3; t.x=(t.pos*30)%500; t.y=50+Math.floor(t.pos/16)*30;});
+    draw();
+  };
+  function draw(){
+    ctx.clearRect(0,0,500,500);
+    ctx.strokeStyle="white";ctx.strokeRect(0,0,500,500);
+    tokens.forEach(t=>{ctx.fillStyle=t.color;ctx.beginPath();ctx.arc(t.x,t.y,15,0,Math.PI*2);ctx.fill();});
+  }
+  draw();
 }
 </script>
 </body>
