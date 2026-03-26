@@ -1,177 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>🎮 Two Player Games Hub</title>
-  <style>
-    body { background: black; color: white; font-family: Arial; text-align: center; }
-    h1 { margin: 20px; }
-    .menu button, .mode-buttons button {
-      margin: 10px; padding: 10px 20px;
-      background: #444; color: white; border: none; border-radius: 5px;
-      cursor: pointer;
-    }
-    .board { display: grid; margin: 20px auto; }
-    .cell { border: 2px solid #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 2em; }
-    .blue { color: blue; }
-    .red { color: red; }
-    canvas { background: #111; margin: 20px auto; display: block; }
-  </style>
+<meta charset="UTF-8">
+<title>Multi-Game Arena</title>
+<style>
+  body { background:black; color:white; font-family:Arial; text-align:center; }
+  button { margin:5px; padding:10px 20px; font-size:16px; }
+  #gameArea { margin-top:20px; }
+  canvas { background:#222; margin:20px auto; display:block; }
+</style>
 </head>
 <body>
-  <h1>🎮 Two Player Games Hub</h1>
-  <div class="menu">
-    <button onclick="startGame('tictactoe')">Tic Tac Toe</button>
-    <button onclick="startGame('connectfour')">Connect Four</button>
-    <button onclick="startGame('chess')">Chess</button>
-    <button onclick="startGame('carrom')">Carrom</button>
-    <button onclick="startGame('cornhole')">Cornhole</button>
-  </div>
-  <div class="mode-buttons">
-    <button onclick="setMode('friend')">Play with Friend</button>
-    <button onclick="setMode('bot')">Play with Bot</button>
-  </div>
-  <p id="status">Select a game to play!</p>
-  <div id="gameArea"></div>
+<h1>🎮 Multi-Game Arena</h1>
+<div id="menu">
+  <button onclick="launchGame('ticTacToe')">Tic Tac Toe</button>
+  <button onclick="launchGame('rps')">Rock Paper Scissors</button>
+  <button onclick="launchGame('chess')">Chess</button>
+  <button onclick="launchGame('carrom')">Carrom</button>
+  <button onclick="launchGame('ludo')">Ludo</button>
+</div>
+<div id="gameArea"></div>
 
-  <!-- External libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script>
+// Menu
+function launchGame(game) {
+  const area=document.getElementById("gameArea");
+  area.innerHTML=`<h2>${game.toUpperCase()}</h2>
+    <button onclick="startGame('${game}','friend')">Play vs Friend</button>
+    <button onclick="startGame('${game}','bot')">Play vs Bot</button>
+    <div id="board"></div>`;
+}
+function startGame(game,mode){
+  if(game==="ticTacToe") runTicTacToe(mode);
+  if(game==="rps") runRPS(mode);
+  if(game==="chess") runChess(mode);
+  if(game==="carrom") runCarrom(mode);
+  if(game==="ludo") runLudo(mode);
+}
 
-  <script>
-    let mode = "friend";
-    let currentPlayer = "blue";
-    let gameOver = false;
-    let board = [];
-    let activeGame = "";
+// Tic Tac Toe
+function runTicTacToe(mode){
+  const boardDiv=document.getElementById("board");
+  let board=Array(9).fill(null); let current="X";
+  function render(){
+    boardDiv.innerHTML="";
+    board.forEach((c,i)=>{
+      const b=document.createElement("button");
+      b.textContent=c||""; b.style.width="60px"; b.style.height="60px";
+      b.onclick=()=>move(i); boardDiv.appendChild(b);
+      if((i+1)%3===0) boardDiv.appendChild(document.createElement("br"));
+    });
+  }
+  function move(i){
+    if(board[i])return;
+    board[i]=current; current=current==="X"?"O":"X"; render();
+    if(checkWin()) alert("Winner!"); else if(mode==="bot"&&current==="O") botMove();
+  }
+  function botMove(){
+    let empty=board.map((c,i)=>c?null:i).filter(x=>x!==null);
+    let choice=empty[Math.floor(Math.random()*empty.length)];
+    move(choice);
+  }
+  function checkWin(){
+    const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    return wins.some(w=>board[w[0]]&&board[w[0]]===board[w[1]]&&board[w[1]]===board[w[2]]);
+  }
+  render();
+}
 
-    function setMode(m) {
-      mode = m;
-      document.getElementById("status").innerText = "Mode: " + m;
-    }
+// Rock Paper Scissors
+function runRPS(mode){
+  const board=document.getElementById("board");
+  board.innerHTML=`<button onclick="play('Rock')">Rock</button>
+                   <button onclick="play('Paper')">Paper</button>
+                   <button onclick="play('Scissors')">Scissors</button>
+                   <div id="result"></div>`;
+  function play(choice){
+    let bot=["Rock","Paper","Scissors"][Math.floor(Math.random()*3)];
+    let res=document.getElementById("result");
+    if(choice===bot) res.textContent=`Bot chose ${bot}. Draw!`;
+    else if((choice==="Rock"&&bot==="Scissors")||(choice==="Paper"&&bot==="Rock")||(choice==="Scissors"&&bot==="Paper"))
+      res.textContent=`Bot chose ${bot}. You win!`;
+    else res.textContent=`Bot chose ${bot}. You lose!`;
+  }
+}
 
-    function startGame(game) {
-      activeGame = game;
-      gameOver = false;
-      currentPlayer = "blue";
-      document.getElementById("gameArea").innerHTML = "";
-      if (game === "tictactoe") initTicTacToe();
-      if (game === "connectfour") initConnectFour();
-      if (game === "chess") initChess();
-      if (game === "carrom") initCarrom();
-      if (game === "cornhole") initCornhole();
-    }
-
-    // ------------------ TIC TAC TOE ------------------
-    function initTicTacToe() {
-      board = Array(9).fill("");
-      const area = document.getElementById("gameArea");
-      const grid = document.createElement("div");
-      grid.className = "board";
-      grid.style.gridTemplateColumns = "repeat(3,100px)";
-      board.forEach((_, i) => {
-        const div = document.createElement("div");
-        div.className = "cell";
-        div.style.width = "100px"; div.style.height = "100px";
-        div.onclick = () => makeMoveTicTacToe(i);
-        grid.appendChild(div);
-      });
-      area.appendChild(grid);
-      document.getElementById("status").innerText = "Tic Tac Toe: Blue starts";
-    }
-    function makeMoveTicTacToe(i) {
-      if (board[i] !== "" || gameOver) return;
-      board[i] = currentPlayer;
-      renderTicTacToe();
-      if (checkWinnerTicTacToe()) return;
-      currentPlayer = currentPlayer === "blue" ? "red" : "blue";
-      document.getElementById("status").innerText = currentPlayer + "'s turn";
-      if (mode === "bot" && currentPlayer === "red") botMoveTicTacToe();
-    }
-    function renderTicTacToe() {
-      const cells = document.querySelectorAll(".cell");
-      board.forEach((val, i) => {
-        cells[i].innerText = val === "" ? "" : (val === "blue" ? "X" : "O");
-        cells[i].className = "cell " + val;
-      });
-    }
-    function botMoveTicTacToe() {
-      let empty = board.map((c,i)=>c===""?i:null).filter(i=>i!==null);
-      let choice = empty[Math.floor(Math.random()*empty.length)];
-      makeMoveTicTacToe(choice);
-    }
-    function checkWinnerTicTacToe() {
-      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-      for (let [a,b,c] of wins) {
-        if (board[a] && board[a]===board[b] && board[a]===board[c]) {
-          document.getElementById("status").innerText = board[a]+" wins!";
-          gameOver = true; return true;
-        }
+// Chess (simplified)
+function runChess(mode){
+  const board=document.getElementById("board");
+  const size=8; let gameBoard=[];
+  for(let r=0;r<size;r++){gameBoard[r]=[];for(let c=0;c<size;c++){gameBoard[r][c]=null;}}
+  // Setup pawns
+  for(let c=0;c<size;c++){gameBoard[1][c]="P";gameBoard[6][c]="p";}
+  // Setup rooks
+  gameBoard[0][0]=gameBoard[0][7]="R";gameBoard[7][0]=gameBoard[7][7]="r";
+  // Knights
+  gameBoard[0][1]=gameBoard[0][6]="N";gameBoard[7][1]=gameBoard[7][6]="n";
+  // Bishops
+  gameBoard[0][2]=gameBoard[0][5]="B";gameBoard[7][2]=gameBoard[7][5]="b";
+  // Queens
+  gameBoard[0][3]="Q";gameBoard[7][3]="q";
+  // Kings
+  gameBoard[0][4]="K";gameBoard[7][4]="k";
+  let current="white";
+  function render(){
+    board.innerHTML="";
+    for(let r=0;r<size;r++){
+      for(let c=0;c<size;c++){
+        const b=document.createElement("button");
+        b.textContent=gameBoard[r][c]||"."; b.style.width="40px"; b.style.height="40px";
+        b.onclick=()=>move(r,c); board.appendChild(b);
       }
-      if (!board.includes("")) {
-        document.getElementById("status").innerText = "Draw!";
-        gameOver = true; return true;
-      }
-      return false;
+      board.appendChild(document.createElement("br"));
     }
+  }
+  let selected=null;
+  function move(r,c){
+    if(selected){gameBoard[r][c]=selected.piece;gameBoard[selected.r][selected.c]=null;selected=null;current=current==="white"?"black":"white";render();}
+    else if(gameBoard[r][c]){selected={r:r,c:c,piece:gameBoard[r][c]};}
+  }
+  render();
+}
 
-    // ------------------ CONNECT FOUR ------------------
-    let rows=6, cols=7;
-    function initConnectFour() {
-      board = Array(rows).fill().map(()=>Array(cols).fill(""));
-      const area = document.getElementById("gameArea");
-      const grid = document.createElement("div");
-      grid.className = "board";
-      grid.style.gridTemplateColumns = "repeat(7,60px)";
-      for (let r=0;r<rows;r++) {
-        for (let c=0;c<cols;c++) {
-          const div = document.createElement("div");
-          div.className = "cell";
-          div.style.width="60px"; div.style.height="60px";
-          div.onclick = () => makeMoveConnectFour(c);
-          grid.appendChild(div);
-        }
-      }
-      area.appendChild(grid);
-      document.getElementById("status").innerText = "Connect Four: Blue starts";
-      renderConnectFour();
-    }
-    function makeMoveConnectFour(col) {
-      if (gameOver) return;
-      for (let r=rows-1;r>=0;r--) {
-        if (board[r][col]==="") {
-          board[r][col]=currentPlayer;
-          renderConnectFour();
-          if (checkWinnerConnectFour()) return;
-          currentPlayer = currentPlayer==="blue"?"red":"blue";
-          document.getElementById("status").innerText = currentPlayer+"'s turn";
-          if (mode==="bot" && currentPlayer==="red") botMoveConnectFour();
-          return;
-        }
-      }
-    }
-    function renderConnectFour() {
-      const cells = document.querySelectorAll(".cell");
-      let idx=0;
-      for (let r=0;r<rows;r++) {
-        for (let c=0;c<cols;c++) {
-          cells[idx].innerText = board[r][c]===""?"":(board[r][c]==="blue"?"●":"●");
-          cells[idx].className = "cell "+board[r][c];
-          idx++;
-        }
-      }
-    }
-    function botMoveConnectFour() {
-      let choice = Math.floor(Math.random()*cols);
-      makeMoveConnectFour(choice);
-    }
-    function checkWinnerConnectFour() {
-      for (let r=0;r<rows;r++) {
-        for (let c=0;c<cols;c++) {
-          let player=board[r][c];
-          if (!player) continue;
-          if (c+3<cols && player===board[r][c+1] && player===board[r][c+2] && player===board[r][c+3]) return declareWinner(player);
-          if (r+3<rows && player===board[r+1][c] && player===board[r+2][c] && player===board[r+3][c]) return declareWinner(player);
-          if (r+3<rows && c+3<cols && player===board[r+1][c+1] && player===board[r+2][c+2] && player===board[r+3][c+3]) return declareWinner(player);
-          if (r-3>=0 &&
+// Carrom (simplified)
+function runCarrom(mode){
+  const canvas=document.createElement("canvas");canvas.width=400;canvas.height=400;board.appendChild(canvas);
+  const ctx=canvas.getContext("2d");
+  let coins=[{x:200,y:200,color:"red"}];
+  for(let i=0;i<9;i++) coins.push({x:180+Math.random()*40,y:180+Math.random()*40,color:"white"});
+  for(let i=0;i<9;i++) coins.push({x:180+Math.random()*40,y:180+Math.random()*40,color:"black"});
+  function draw(){
+    ctx.clearRect(0,0,400,400);
+    ctx.strokeStyle="white";ctx.strokeRect(0,0,400,400);
+    coins.forEach(c=>{ctx.fillStyle=c.color;ctx.beginPath();ctx.arc(c.x,c.y,10,0,Math.PI*2);ctx.fill();});
+  }
+  draw();
+}
+
+// Ludo (simplified)
+function runLudo(mode){
+  const board=document.getElementById("board");
+  board.innerHTML="<p>Ludo board simulation with dice rolls.</p>";
+  let pos=0;
+  const btn=document.createElement("button");btn.textContent="Roll Dice";board.appendChild(btn);
+  const status=document.createElement("div");board.appendChild(status);
+  btn.onclick=()=>{let roll=Math.floor(Math.random()*6)+1;pos+=roll;status.textContent=`Rolled ${roll}, position ${pos}`;};
+}
+</script>
+</body>
+</html>
